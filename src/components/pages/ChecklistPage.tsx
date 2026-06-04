@@ -17,38 +17,38 @@ import {
 } from "@/store/tasks";
 import { cn } from "@/lib/utils";
 
-type FormState = Omit<InspectionReport, "id" | "submittedAt">;
+type FormState = Omit<InspectionReport, "id" | "submitted_at">;
 
 const empty: FormState = {
-  jobNumber: "",
+  job_number: "",
   date: new Date().toISOString().slice(0, 10),
   supervisor: "",
-  arrivalTime: "",
-  departureTime: "",
-  stationName: "",
-  stationManager: "",
-  orderSummary: "",
-  productQualityNotes: "",
-  caliperNotes: "",
-  washingNotes: "",
-  packingMaterialNotes: "",
-  temperatureC: "",
-  temperatureNotes: "",
-  packingWeightSizeNotes: "",
-  palletsCheckNotes: "",
-  palletsConditionNotes: "",
-  palletsPreparedWeight: "",
-  palletsPreparedNotes: "",
-  fittingNotes: "",
-  storageCondition: "",
-  loadingStart: "",
-  loadingEnd: "",
-  containerWashedNotes: "",
-  testingTempCondition: "",
-  finalLoadingDetails: "",
-  inspectorName: "",
+  arrival_time: "",
+  departure_time: "",
+  station_name: "",
+  station_manager: "",
+  order_summary: "",
+  product_quality_notes: "",
+  caliper_notes: "",
+  washing_notes: "",
+  packing_material_notes: "",
+  temperature_c: "",
+  temperature_notes: "",
+  packing_weight_size_notes: "",
+  pallets_check_notes: "",
+  pallets_condition_notes: "",
+  pallets_prepared_weight: "",
+  pallets_prepared_notes: "",
+  fitting_notes: "",
+  storage_condition: "",
+  loading_start: "",
+  loading_end: "",
+  container_washed_notes: "",
+  testing_temp_condition: "",
+  final_loading_details: "",
+  inspector_name: "",
   signature: "",
-  submittedById: "",
+  submitted_by_id: "",
 };
 
 export function ChecklistPage() {
@@ -56,13 +56,13 @@ export function ChecklistPage() {
   const { addReport, currentEmployeeId, employees } = useStore();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState<FormState>({ ...empty, submittedById: currentEmployeeId });
+  const [form, setForm] = useState<FormState>({ ...empty, submitted_by_id: currentEmployeeId });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (currentEmployeeId) {
-      setForm((s) => ({ ...s, submittedById: currentEmployeeId }));
+      setForm((s) => ({ ...s, submitted_by_id: currentEmployeeId }));
     }
   }, [currentEmployeeId]);
 
@@ -77,7 +77,7 @@ export function ChecklistPage() {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (!form.jobNumber.trim() || !form.inspectorName.trim()) {
+    if (!form.job_number.trim() || !form.inspector_name.trim()) {
       setError(t.checklist.validation);
       return;
     }
@@ -85,19 +85,19 @@ export function ChecklistPage() {
     // تنظيف البيانات باستخدام undefined بدلاً من null لتتوافق مع TypeScript
     const cleanedForm: FormState = {
       ...form,
-      productQuality: form.productQuality || undefined,
+      product_quality: form.product_quality || undefined,
       caliper: form.caliper || undefined,
       washing: form.washing || undefined,
-      packingMaterial: form.packingMaterial || undefined,
-      temperatureTreatment: form.temperatureTreatment || undefined,
-      packingWeightSize: form.packingWeightSize || undefined,
-      palletsCheck: form.palletsCheck || undefined,
-      palletsConditionType: form.palletsConditionType || undefined,
-      palletsConditionStrength: form.palletsConditionStrength || undefined,
-      palletsPreparedWrapping: form.palletsPreparedWrapping || undefined,
+      packing_material: form.packing_material || undefined,
+      temperature_treatment: form.temperature_treatment || undefined,
+      packing_weight_size: form.packing_weight_size || undefined,
+      pallets_check: form.pallets_check || undefined,
+      pallets_condition_type: form.pallets_condition_type || undefined,
+      pallets_condition_strength: form.pallets_condition_strength || undefined,
+      pallets_prepared_wrapping: form.pallets_prepared_wrapping || undefined,
       fitting: form.fitting || undefined,
-      containerWashed: form.containerWashed || undefined,
-      submittedById: currentEmployeeId,
+      container_washed: form.container_washed || undefined,
+      submitted_by_id: currentEmployeeId,
     };
 
     addReport(cleanedForm);
@@ -136,9 +136,9 @@ export function ChecklistPage() {
           <Section title={t.checklist.jobInfo}>
             <Grid>
               <Text
-                label={t.checklist.jobNumber}
-                value={form.jobNumber}
-                onChange={(v) => set("jobNumber", v)}
+                label={t.checklist.job_number}
+                value={form.job_number}
+                onChange={(v) => set("job_number", v)}
                 required
               />
               <DateInput
@@ -152,14 +152,14 @@ export function ChecklistPage() {
                 onChange={(v) => set("supervisor", v)}
               />
               <TimeInput
-                label={t.checklist.arrivalTime}
-                value={form.arrivalTime}
-                onChange={(v) => set("arrivalTime", v)}
+                label={t.checklist.arrival_time}
+                value={form.arrival_time}
+                onChange={(v) => set("arrival_time", v)}
               />
               <TimeInput
-                label={t.checklist.departureTime}
-                value={form.departureTime}
-                onChange={(v) => set("departureTime", v)}
+                label={t.checklist.departure_time}
+                value={form.departure_time}
+                onChange={(v) => set("departure_time", v)}
               />
             </Grid>
           </Section>
@@ -168,21 +168,21 @@ export function ChecklistPage() {
           <Section title={t.checklist.stationDetails}>
             <Grid>
               <Text
-                label={t.checklist.stationName}
-                value={form.stationName}
-                onChange={(v) => set("stationName", v)}
+                label={t.checklist.station_name}
+                value={form.station_name}
+                onChange={(v) => set("station_name", v)}
               />
               <Text
-                label={t.checklist.stationManager}
-                value={form.stationManager}
-                onChange={(v) => set("stationManager", v)}
+                label={t.checklist.station_manager}
+                value={form.station_manager}
+                onChange={(v) => set("station_manager", v)}
               />
             </Grid>
-            <Field label={t.checklist.orderSummary}>
+            <Field label={t.checklist.order_summary}>
               <textarea
                 rows={3}
-                value={form.orderSummary}
-                onChange={(e) => set("orderSummary", e.target.value)}
+                value={form.order_summary}
+                onChange={(e) => set("order_summary", e.target.value)}
                 className="textarea"
               />
             </Field>
@@ -191,16 +191,16 @@ export function ChecklistPage() {
           {/* Product Inspection */}
           <Section title={t.checklist.productInspection}>
             <Rating
-              label={t.checklist.productQuality}
+              label={t.checklist.product_quality}
               options={[
                 ["fair", t.checklist.fair],
                 ["good", t.checklist.good],
                 ["excellent", t.checklist.excellent],
               ]}
-              value={form.productQuality}
-              onChange={(v) => set("productQuality", v as Rating3)}
-              notes={form.productQualityNotes}
-              onNotes={(v) => set("productQualityNotes", v)}
+              value={form.product_quality}
+              onChange={(v) => set("product_quality", v as Rating3)}
+              notes={form.product_quality_notes}
+              onNotes={(v) => set("product_quality_notes", v)}
               notesLabel={t.checklist.notes}
             />
             <Rating
@@ -212,8 +212,8 @@ export function ChecklistPage() {
               ]}
               value={form.caliper}
               onChange={(v) => set("caliper", v as Caliper)}
-              notes={form.caliperNotes}
-              onNotes={(v) => set("caliperNotes", v)}
+              notes={form.caliper_notes}
+              onNotes={(v) => set("caliper_notes", v)}
               notesLabel={t.checklist.notes}
             />
             <Rating
@@ -225,27 +225,27 @@ export function ChecklistPage() {
               ]}
               value={form.washing}
               onChange={(v) => set("washing", v as Rating3)}
-              notes={form.washingNotes}
-              onNotes={(v) => set("washingNotes", v)}
+              notes={form.washing_notes}
+              onNotes={(v) => set("washing_notes", v)}
               notesLabel={t.checklist.notes}
             />
             <Rating
-              label={t.checklist.packingMaterial}
+              label={t.checklist.packing_material}
               options={[
                 ["fair", t.checklist.fair],
                 ["good", t.checklist.good],
                 ["excellent", t.checklist.excellent],
               ]}
-              value={form.packingMaterial}
-              onChange={(v) => set("packingMaterial", v as Rating3)}
-              notes={form.packingMaterialNotes}
-              onNotes={(v) => set("packingMaterialNotes", v)}
+              value={form.packing_material}
+              onChange={(v) => set("packing_material", v as Rating3)}
+              notes={form.packing_material_notes}
+              onNotes={(v) => set("packing_material_notes", v)}
               notesLabel={t.checklist.notes}
             />
             <Rating
               label={
                 <span className="inline-flex items-center gap-2">
-                  <Thermometer className="size-4 text-urgent" /> {t.checklist.temperatureTreatment}
+                  <Thermometer className="size-4 text-urgent" /> {t.checklist.temperature_treatment}
                 </span>
               }
               options={[
@@ -253,10 +253,10 @@ export function ChecklistPage() {
                 ["good", t.checklist.good],
                 ["excellent", t.checklist.excellent],
               ]}
-              value={form.temperatureTreatment}
-              onChange={(v) => set("temperatureTreatment", v as Rating3)}
-              notes={form.temperatureNotes}
-              onNotes={(v) => set("temperatureNotes", v)}
+              value={form.temperature_treatment}
+              onChange={(v) => set("temperature_treatment", v as Rating3)}
+              notes={form.temperature_notes}
+              onNotes={(v) => set("temperature_notes", v)}
               notesLabel={t.checklist.notes}
               extra={
                 <div className="flex items-center gap-2 mt-2">
@@ -264,8 +264,8 @@ export function ChecklistPage() {
                     type="number"
                     step="0.1"
                     placeholder={t.checklist.temperature}
-                    value={form.temperatureC}
-                    onChange={(e) => set("temperatureC", e.target.value)}
+                    value={form.temperature_c}
+                    onChange={(e) => set("temperature_c", e.target.value)}
                     className="w-40 input"
                   />
                   <span className="text-xs text-muted-foreground font-bold">°C</span>
@@ -273,16 +273,16 @@ export function ChecklistPage() {
               }
             />
             <Rating
-              label={t.checklist.packingWeightSize}
+              label={t.checklist.packing_weight_size}
               options={[
                 ["fair", t.checklist.fair],
                 ["good", t.checklist.good],
                 ["excellent", t.checklist.excellent],
               ]}
-              value={form.packingWeightSize}
-              onChange={(v) => set("packingWeightSize", v as Rating3)}
-              notes={form.packingWeightSizeNotes}
-              onNotes={(v) => set("packingWeightSizeNotes", v)}
+              value={form.packing_weight_size}
+              onChange={(v) => set("packing_weight_size", v as Rating3)}
+              notes={form.packing_weight_size_notes}
+              onNotes={(v) => set("packing_weight_size_notes", v)}
               notesLabel={t.checklist.notes}
             />
           </Section>
@@ -290,59 +290,59 @@ export function ChecklistPage() {
           {/* Pallets */}
           <Section title={t.checklist.palletsInspection}>
             <Rating
-              label={t.checklist.palletsCheck}
+              label={t.checklist.pallets_check}
               options={[
                 ["stamped", t.checklist.stamped],
                 ["not_stamped", t.checklist.notStamped],
               ]}
-              value={form.palletsCheck}
-              onChange={(v) => set("palletsCheck", v as StampedT)}
-              notes={form.palletsCheckNotes}
-              onNotes={(v) => set("palletsCheckNotes", v)}
+              value={form.pallets_check}
+              onChange={(v) => set("pallets_check", v as StampedT)}
+              notes={form.pallets_check_notes}
+              onNotes={(v) => set("pallets_check_notes", v)}
               notesLabel={t.checklist.notes}
             />
 
             <div className="space-y-3">
               <Rating
-                label={t.checklist.palletsCondition}
+                label={t.checklist.pallets_condition}
                 options={[
                   ["new", t.checklist.new],
                   ["used", t.checklist.used],
                 ]}
-                value={form.palletsConditionType}
-                onChange={(v) => set("palletsConditionType", v as PalletNew)}
+                value={form.pallets_condition_type}
+                onChange={(v) => set("pallets_condition_type", v as PalletNew)}
                 notesLabel={t.checklist.notes}
               />
               <Rating
-                label={`${t.checklist.palletsCondition} — ${t.checklist.fair}/${t.checklist.strong}/${t.checklist.excellent}`}
+                label={`${t.checklist.pallets_condition} — ${t.checklist.fair}/${t.checklist.strong}/${t.checklist.excellent}`}
                 options={[
                   ["fair", t.checklist.fair],
                   ["strong", t.checklist.strong],
                   ["excellent", t.checklist.excellent],
                 ]}
-                value={form.palletsConditionStrength}
-                onChange={(v) => set("palletsConditionStrength", v as PalletStrength)}
-                notes={form.palletsConditionNotes}
-                onNotes={(v) => set("palletsConditionNotes", v)}
+                value={form.pallets_condition_strength}
+                onChange={(v) => set("pallets_condition_strength", v as PalletStrength)}
+                notes={form.pallets_condition_notes}
+                onNotes={(v) => set("pallets_condition_notes", v)}
                 notesLabel={t.checklist.notes}
               />
             </div>
 
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-foreground mb-3">
-                {t.checklist.palletsPrepared}
+                {t.checklist.pallets_prepared}
               </p>
               <Grid>
                 <Text
                   label={t.checklist.weight}
                   type="number"
-                  value={form.palletsPreparedWeight}
-                  onChange={(v) => set("palletsPreparedWeight", v)}
+                  value={form.pallets_prepared_weight}
+                  onChange={(v) => set("pallets_prepared_weight", v)}
                 />
                 <Field label={t.checklist.wrapping}>
                   <Choice
-                    value={form.palletsPreparedWrapping}
-                    onChange={(v) => set("palletsPreparedWrapping", v as YesNo)}
+                    value={form.pallets_prepared_wrapping}
+                    onChange={(v) => set("pallets_prepared_wrapping", v as YesNo)}
                     options={[
                       ["yes", t.checklist.yes],
                       ["no", t.checklist.no],
@@ -353,8 +353,8 @@ export function ChecklistPage() {
               <Field label={t.checklist.notes}>
                 <textarea
                   rows={2}
-                  value={form.palletsPreparedNotes}
-                  onChange={(e) => set("palletsPreparedNotes", e.target.value)}
+                  value={form.pallets_prepared_notes}
+                  onChange={(e) => set("pallets_prepared_notes", e.target.value)}
                   className="textarea"
                 />
               </Field>
@@ -368,64 +368,64 @@ export function ChecklistPage() {
               ]}
               value={form.fitting}
               onChange={(v) => set("fitting", v as FittingT)}
-              notes={form.fittingNotes}
-              onNotes={(v) => set("fittingNotes", v)}
+              notes={form.fitting_notes}
+              onNotes={(v) => set("fitting_notes", v)}
               notesLabel={t.checklist.notes}
             />
           </Section>
 
           {/* Storage & Loading */}
           <Section title={t.checklist.storageLoading}>
-            <Field label={t.checklist.storageCondition}>
+            <Field label={t.checklist.storage_condition}>
               <textarea
                 rows={2}
-                value={form.storageCondition}
-                onChange={(e) => set("storageCondition", e.target.value)}
+                value={form.storage_condition}
+                onChange={(e) => set("storage_condition", e.target.value)}
                 className="textarea"
               />
             </Field>
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-foreground mb-3">
-                {t.checklist.loadingTime}
+                {t.checklist.loading_time}
               </p>
               <Grid>
                 <TimeInput
-                  label={t.checklist.startAt}
-                  value={form.loadingStart}
-                  onChange={(v) => set("loadingStart", v)}
+                  label={t.checklist.start_at}
+                  value={form.loading_start}
+                  onChange={(v) => set("loading_start", v)}
                 />
                 <TimeInput
-                  label={t.checklist.endAt}
-                  value={form.loadingEnd}
-                  onChange={(v) => set("loadingEnd", v)}
+                  label={t.checklist.end_at}
+                  value={form.loading_end}
+                  onChange={(v) => set("loading_end", v)}
                 />
               </Grid>
             </div>
             <Rating
-              label={t.checklist.containerWashed}
+              label={t.checklist.container_washed}
               options={[
                 ["yes", t.checklist.yes],
                 ["no", t.checklist.no],
               ]}
-              value={form.containerWashed}
-              onChange={(v) => set("containerWashed", v as YesNo)}
-              notes={form.containerWashedNotes}
-              onNotes={(v) => set("containerWashedNotes", v)}
+              value={form.container_washed}
+              onChange={(v) => set("container_washed", v as YesNo)}
+              notes={form.container_washed_notes}
+              onNotes={(v) => set("container_washed_notes", v)}
               notesLabel={t.checklist.notes}
             />
-            <Field label={t.checklist.testingTempCondition}>
+            <Field label={t.checklist.testing_temp_condition}>
               <textarea
                 rows={2}
-                value={form.testingTempCondition}
-                onChange={(e) => set("testingTempCondition", e.target.value)}
+                value={form.testing_temp_condition}
+                onChange={(e) => set("testing_temp_condition", e.target.value)}
                 className="textarea"
               />
             </Field>
-            <Field label={t.checklist.finalLoadingDetails}>
+            <Field label={t.checklist.final_loading_details}>
               <textarea
                 rows={3}
-                value={form.finalLoadingDetails}
-                onChange={(e) => set("finalLoadingDetails", e.target.value)}
+                value={form.final_loading_details}
+                onChange={(e) => set("final_loading_details", e.target.value)}
                 className="textarea"
               />
             </Field>
@@ -435,13 +435,13 @@ export function ChecklistPage() {
           <Section title={t.checklist.signature}>
             <Grid>
               <Text
-                label={t.checklist.inspectorName}
-                value={form.inspectorName}
-                onChange={(v) => set("inspectorName", v)}
+                label={t.checklist.inspector_name}
+                value={form.inspector_name}
+                onChange={(v) => set("inspector_name", v)}
                 required
               />
               <Text
-                label={t.checklist.signatureField}
+                label={t.checklist.signature_field}
                 value={form.signature}
                 onChange={(v) => set("signature", v)}
               />

@@ -52,10 +52,10 @@ export function TeamPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {employees.map((e) => {
             const assigned = tasks.filter(
-              (x) => x.assigneeId === e.id || x.assigneeId === "all",
+              (x) => x.assignee_id === e.id || x.assignee_id === "all",
             ).length;
             const done = tasks.filter(
-              (x) => (x.assigneeId === e.id || x.assigneeId === "all") && x.status === "completed",
+              (x) => (x.assignee_id === e.id || x.assignee_id === "all") && x.status === "completed",
             ).length;
             return (
               <div

@@ -14,9 +14,9 @@ export function SendPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assigneeId, setAssigneeId] = useState<string>("all");
+  const [assignee_id, setAssigneeId] = useState<string>("all");
   const [priority, setPriority] = useState<Priority>("medium");
-  const [dueDate, setDueDate] = useState("");
+  const [due_date, setDueDate] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -30,7 +30,7 @@ export function SendPage() {
       setError(t.send.validation);
       return;
     }
-    addTask({ title, description, assigneeId, priority, dueDate: dueDate || undefined });
+    addTask({ title, description, assignee_id, priority, due_date: due_date || undefined });
     setSuccess(true);
     setTimeout(() => navigate({ to: "/" }), 900);
   };
@@ -78,7 +78,7 @@ export function SendPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <Field label={t.send.assignLabel}>
               <select
-                value={assigneeId}
+                value={assignee_id}
                 onChange={(e) => setAssigneeId(e.target.value)}
                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
@@ -91,7 +91,7 @@ export function SendPage() {
               </select>
             </Field>
 
-            <DateInput label={t.send.dueLabel} value={dueDate} onChange={setDueDate} />
+            <DateInput label={t.send.dueLabel} value={due_date} onChange={setDueDate} />
           </div>
 
           <Field label={t.send.priorityLabel}>

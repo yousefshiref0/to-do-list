@@ -32,7 +32,7 @@ export function DashboardPage() {
   const visibleTasks = useMemo(() => {
     const base = isAdmin
       ? tasks
-      : tasks.filter((x) => x.assigneeId === currentEmployeeId || x.assigneeId === "all");
+      : tasks.filter((x) => x.assignee_id === currentEmployeeId || x.assignee_id === "all");
     return filter === "all" ? base : base.filter((tk) => tk.priority === filter);
   }, [tasks, filter, isAdmin, currentEmployeeId]);
 
@@ -41,7 +41,7 @@ export function DashboardPage() {
   const completed = tasks.filter((x) => x.status === "completed").length;
 
   const teamProgress = employees.map((e) => {
-    const mine = tasks.filter((t) => t.assigneeId === e.id || t.assigneeId === "all");
+    const mine = tasks.filter((t) => t.assignee_id === e.id || t.assignee_id === "all");
 
     const done = mine.filter((t) => t.status === "completed").length;
     const pct = mine.length === 0 ? 0 : Math.round((done / mine.length) * 100);
@@ -144,9 +144,9 @@ export function DashboardPage() {
               <div className="divide-y divide-border">
                 {visibleTasks.map((task) => {
                   const assignee =
-                    task.assigneeId === "all"
+                    task.assignee_id === "all"
                       ? { name: t.send.assignAll, role: "" }
-                      : employees.find((e) => e.id === task.assigneeId);
+                      : employees.find((e) => e.id === task.assignee_id);
                   return (
                     <article
                       key={task.id}
@@ -174,7 +174,7 @@ export function DashboardPage() {
                       <div className="flex flex-col items-end gap-3 shrink-0">
                         <StatusBadge status={task.status} />
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                          {t.common.issued} · {fmt.ago(new Date(task.createdAt).getTime())}
+                          {t.common.issued} · {fmt.ago(new Date(task.created_at).getTime())}
                         </p>
                       </div>
                     </article>

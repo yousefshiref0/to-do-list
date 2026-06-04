@@ -46,17 +46,17 @@ export function ReportsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-base uppercase tracking-widest text-muted-foreground font-bold">
-                        {t.checklist.jobNumber} · {r.jobNumber || "—"}
+                        {t.checklist.job_number} · {r.job_number || "—"}
                       </p>
                       <h3 className="font-display text-2xl font-bold text-foreground mt-1.5 truncate">
-                        {r.stationName || r.inspectorName || "Inspection Report"}
+                        {r.station_name || r.inspector_name || "Inspection Report"}
                       </h3>
                       <p className="text-sm text-muted-foreground mt-1.5">
                         {t.checklist.submittedBy}{" "}
                         <span className="text-foreground font-semibold">
-                          {nameFor(r.submittedById)}
+                          {nameFor(r.submitted_by_id)}
                         </span>{" "}
-                        · {fmt.datetime(r.submittedAt)}
+                        · {fmt.datetime(r.submitted_at)}
                       </p>
                     </div>
                     <button
@@ -70,11 +70,11 @@ export function ReportsPage() {
                     </button>
                   </div>
                   <div className="grid grid-cols-3 gap-2 mt-4 text-center">
-                    <Mini label={t.checklist.productQuality} value={r.productQuality} />
+                    <Mini label={t.checklist.product_quality} value={r.product_quality} />
                     <Mini label={t.checklist.caliper} value={r.caliper} />
                     <Mini
                       label={t.checklist.temperature}
-                      value={r.temperatureC ? `${r.temperatureC}°C` : "—"}
+                      value={r.temperature_c ? `${r.temperature_c}°C` : "—"}
                     />
                   </div>
                   <button
@@ -164,101 +164,101 @@ function ReportModal({
                 MODERN ENTERPRISE — Loading & Quality Check List
               </h1>
               <p className="text-xs text-muted-foreground mt-1">
-                {t.checklist.submittedBy}: <strong>{nameFor(r.submittedById)}</strong> ·{" "}
-                {fmt.datetime(r.submittedAt)}
+                {t.checklist.submittedBy}: <strong>{nameFor(r.submitted_by_id)}</strong> ·{" "}
+                {fmt.datetime(r.submitted_at)}
               </p>
             </div>
           </header>
 
           <Section title={t.checklist.jobInfo}>
-            <Row label={t.checklist.jobNumber} value={r.jobNumber} />
+            <Row label={t.checklist.job_number} value={r.job_number} />
             <Row label={t.checklist.date} value={fmt.date(r.date) || r.date} />
             <Row label={t.checklist.supervisor} value={r.supervisor} />
-            <Row label={t.checklist.arrivalTime} value={r.arrivalTime} />
-            <Row label={t.checklist.departureTime} value={r.departureTime} />
+            <Row label={t.checklist.arrival_time} value={r.arrival_time} />
+            <Row label={t.checklist.departure_time} value={r.departure_time} />
           </Section>
 
           <Section title={t.checklist.stationDetails}>
-            <Row label={t.checklist.stationName} value={r.stationName} />
-            <Row label={t.checklist.stationManager} value={r.stationManager} />
-            <Row label={t.checklist.orderSummary} value={r.orderSummary} />
+            <Row label={t.checklist.station_name} value={r.station_name} />
+            <Row label={t.checklist.station_manager} value={r.station_manager} />
+            <Row label={t.checklist.order_summary} value={r.order_summary} />
           </Section>
 
           <Section title={t.checklist.productInspection}>
-            <Row label={t.checklist.productQuality} value={r.productQuality} />
+            <Row label={t.checklist.product_quality} value={r.product_quality} />
             <Row
-              label={`${t.checklist.productQuality} ${t.checklist.notes}`}
-              value={r.productQualityNotes}
+              label={`${t.checklist.product_quality} ${t.checklist.notes}`}
+              value={r.product_quality_notes}
             />
             <Row label={t.checklist.caliper} value={r.caliper} />
-            <Row label={`${t.checklist.caliper} ${t.checklist.notes}`} value={r.caliperNotes} />
+            <Row label={`${t.checklist.caliper} ${t.checklist.notes}`} value={r.caliper_notes} />
             <Row label={t.checklist.washing} value={r.washing} />
-            <Row label={`${t.checklist.washing} ${t.checklist.notes}`} value={r.washingNotes} />
-            <Row label={t.checklist.packingMaterial} value={r.packingMaterial} />
+            <Row label={`${t.checklist.washing} ${t.checklist.notes}`} value={r.washing_notes} />
+            <Row label={t.checklist.packing_material} value={r.packing_material} />
             <Row
-              label={`${t.checklist.packingMaterial} ${t.checklist.notes}`}
-              value={r.packingMaterialNotes}
+              label={`${t.checklist.packing_material} ${t.checklist.notes}`}
+              value={r.packing_material_notes}
             />
-            <Row label={t.checklist.temperatureTreatment} value={r.temperatureTreatment} />
+            <Row label={t.checklist.temperature_treatment} value={r.temperature_treatment} />
             <Row
               label={t.checklist.temperature}
-              value={r.temperatureC ? `${r.temperatureC}°C` : "—"}
+              value={r.temperature_c ? `${r.temperature_c}°C` : "—"}
             />
             <Row
-              label={`${t.checklist.temperatureTreatment} ${t.checklist.notes}`}
-              value={r.temperatureNotes}
+              label={`${t.checklist.temperature_treatment} ${t.checklist.notes}`}
+              value={r.temperature_notes}
             />
-            <Row label={t.checklist.packingWeightSize} value={r.packingWeightSize} />
+            <Row label={t.checklist.packing_weight_size} value={r.packing_weight_size} />
             <Row
-              label={`${t.checklist.packingWeightSize} ${t.checklist.notes}`}
-              value={r.packingWeightSizeNotes}
+              label={`${t.checklist.packing_weight_size} ${t.checklist.notes}`}
+              value={r.packing_weight_size_notes}
             />
           </Section>
 
           <Section title={t.checklist.palletsInspection}>
-            <Row label={t.checklist.palletsCheck} value={r.palletsCheck?.replace("_", " ")} />
+            <Row label={t.checklist.pallets_check} value={r.pallets_check?.replace("_", " ")} />
             <Row
-              label={`${t.checklist.palletsCheck} ${t.checklist.notes}`}
-              value={r.palletsCheckNotes}
+              label={`${t.checklist.pallets_check} ${t.checklist.notes}`}
+              value={r.pallets_check_notes}
             />
-            <Row label={t.checklist.palletsCondition} value={r.palletsConditionType} />
+            <Row label={t.checklist.pallets_condition} value={r.pallets_condition_type} />
             <Row
-              label={`${t.checklist.palletsCondition} (${t.checklist.strong})`}
-              value={r.palletsConditionStrength}
-            />
-            <Row
-              label={`${t.checklist.palletsCondition} ${t.checklist.notes}`}
-              value={r.palletsConditionNotes}
+              label={`${t.checklist.pallets_condition} (${t.checklist.strong})`}
+              value={r.pallets_condition_strength}
             />
             <Row
-              label={`${t.checklist.palletsPrepared} — ${t.checklist.weight}`}
-              value={r.palletsPreparedWeight ? `${r.palletsPreparedWeight} kg` : "—"}
+              label={`${t.checklist.pallets_condition} ${t.checklist.notes}`}
+              value={r.pallets_condition_notes}
             />
-            <Row label={t.checklist.wrapping} value={r.palletsPreparedWrapping} />
             <Row
-              label={`${t.checklist.palletsPrepared} ${t.checklist.notes}`}
-              value={r.palletsPreparedNotes}
+              label={`${t.checklist.pallets_prepared} — ${t.checklist.weight}`}
+              value={r.pallets_prepared_weight ? `${r.pallets_prepared_weight} kg` : "—"}
+            />
+            <Row label={t.checklist.wrapping} value={r.pallets_prepared_wrapping} />
+            <Row
+              label={`${t.checklist.pallets_prepared} ${t.checklist.notes}`}
+              value={r.pallets_prepared_notes}
             />
             <Row label={t.checklist.fitting} value={r.fitting?.replace("_", " ")} />
-            <Row label={`${t.checklist.fitting} ${t.checklist.notes}`} value={r.fittingNotes} />
+            <Row label={`${t.checklist.fitting} ${t.checklist.notes}`} value={r.fitting_notes} />
           </Section>
 
           <Section title={t.checklist.storageLoading}>
-            <Row label={t.checklist.storageCondition} value={r.storageCondition} />
-            <Row label={t.checklist.startAt} value={r.loadingStart} />
-            <Row label={t.checklist.endAt} value={r.loadingEnd} />
-            <Row label={t.checklist.containerWashed} value={r.containerWashed} />
+            <Row label={t.checklist.storage_condition} value={r.storage_condition} />
+            <Row label={t.checklist.start_at} value={r.loading_start} />
+            <Row label={t.checklist.end_at} value={r.loading_end} />
+            <Row label={t.checklist.container_washed} value={r.container_washed} />
             <Row
-              label={`${t.checklist.containerWashed} ${t.checklist.notes}`}
-              value={r.containerWashedNotes}
+              label={`${t.checklist.container_washed} ${t.checklist.notes}`}
+              value={r.container_washed_notes}
             />
-            <Row label={t.checklist.testingTempCondition} value={r.testingTempCondition} />
-            <Row label={t.checklist.finalLoadingDetails} value={r.finalLoadingDetails} />
+            <Row label={t.checklist.testing_temp_condition} value={r.testing_temp_condition} />
+            <Row label={t.checklist.final_loading_details} value={r.final_loading_details} />
           </Section>
 
           <Section title={t.checklist.signature}>
-            <Row label={t.checklist.inspectorName} value={r.inspectorName} />
-            <Row label={t.checklist.signatureField} value={r.signature} />
+            <Row label={t.checklist.inspector_name} value={r.inspector_name} />
+            <Row label={t.checklist.signature_field} value={r.signature} />
           </Section>
         </div>
       </div>

@@ -17,7 +17,7 @@ export interface Employee {
   id: string;
   name: string;
   role: string;
-  avatarSeed: number;
+  avatar_seed: number;
 }
 
 export interface Task {
@@ -27,10 +27,10 @@ export interface Task {
   description: string;
   priority: Priority;
   status: TaskStatus;
-  assigneeId: string | "all";
-  createdAt: string;
-  dueDate?: string;
-  createdBy: string;
+  assignee_id: string | "all";
+  created_at: string;
+  due_date?: string;
+  created_by: string;
 }
 export type Rating3 = "fair" | "good" | "excellent";
 export type Caliper = "fair" | "fit" | "perfect";
@@ -42,64 +42,64 @@ export type YesNo = "yes" | "no";
 
 export interface InspectionReport {
   id: string;
-  jobNumber: string;
+  job_number: string;
   date: string;
   supervisor: string;
-  arrivalTime: string;
-  departureTime: string;
-  stationName: string;
-  stationManager: string;
-  orderSummary: string;
+  arrival_time: string;
+  departure_time: string;
+  station_name: string;
+  station_manager: string;
+  order_summary: string;
 
-  productQuality?: Rating3;
-  productQualityNotes: string;
+  product_quality?: Rating3;
+  product_quality_notes: string;
 
   caliper?: Caliper;
-  caliperNotes: string;
+  caliper_notes: string;
 
   washing?: Rating3;
-  washingNotes: string;
+  washing_notes: string;
 
-  packingMaterial?: Rating3;
-  packingMaterialNotes: string;
+  packing_material?: Rating3;
+  packing_material_notes: string;
 
-  temperatureTreatment?: Rating3;
-  temperatureC: string;
-  temperatureNotes: string;
+  temperature_treatment?: Rating3;
+  temperature_c: string;
+  temperature_notes: string;
 
-  packingWeightSize?: Rating3;
-  packingWeightSizeNotes: string;
+  packing_weight_size?: Rating3;
+  packing_weight_size_notes: string;
 
-  palletsCheck?: StampedT;
-  palletsCheckNotes: string;
+  pallets_check?: StampedT;
+  pallets_check_notes: string;
 
-  palletsConditionType?: PalletNew;
-  palletsConditionStrength?: PalletStrength;
-  palletsConditionNotes: string;
+  pallets_condition_type?: PalletNew;
+  pallets_condition_strength?: PalletStrength;
+  pallets_condition_notes: string;
 
-  palletsPreparedWeight: string;
-  palletsPreparedWrapping?: YesNo;
-  palletsPreparedNotes: string;
+  pallets_prepared_weight: string;
+  pallets_prepared_wrapping?: YesNo;
+  pallets_prepared_notes: string;
 
   fitting?: FittingT;
-  fittingNotes: string;
+  fitting_notes: string;
 
-  storageCondition: string;
+  storage_condition: string;
 
-  loadingStart: string;
-  loadingEnd: string;
+  loading_start: string;
+  loading_end: string;
 
-  containerWashed?: YesNo;
-  containerWashedNotes: string;
+  container_washed?: YesNo;
+  container_washed_notes: string;
 
-  testingTempCondition: string;
-  finalLoadingDetails: string;
+  testing_temp_condition: string;
+  final_loading_details: string;
 
-  inspectorName: string;
+  inspector_name: string;
   signature: string;
 
-  submittedAt: string;
-  submittedById: string;
+  submitted_at: string;
+  submitted_by_id: string;
 }
 
 interface Store {
@@ -108,12 +108,12 @@ interface Store {
   reports: InspectionReport[];
   currentEmployeeId: string;
   setCurrentEmployeeId: (id: string) => void;
-  addTask: (t: Omit<Task, "id" | "ref" | "createdAt" | "status" | "createdBy">) => void;
+  addTask: (t: Omit<Task, "id" | "ref" | "created_at" | "status" | "created_by">) => void;
   updateTaskStatus: (id: string, status: TaskStatus) => void;
   deleteTask: (id: string) => void;
-  addEmployee: (e: Omit<Employee, "id" | "avatarSeed">) => void;
+  addEmployee: (e: Omit<Employee, "id" | "avatar_seed">) => void;
   removeEmployee: (id: string) => void;
-  addReport: (r: Omit<InspectionReport, "id" | "submittedAt">) => void;
+  addReport: (r: Omit<InspectionReport, "id" | "submitted_at">) => void;
   deleteReport: (id: string) => void;
 }
 
@@ -138,8 +138,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<Persisted>({
     tasks: [],
     employees: [
-      { id: "e1", name: "Ahmed", role: "Driver", avatarSeed: 1 },
-      { id: "e2", name: "Mohamed", role: "Dispatcher", avatarSeed: 2 },
+      { id: "e1", name: "Ahmed", role: "Driver", avatar_seed: 1 },
+      { id: "e2", name: "Mohamed", role: "Dispatcher", avatar_seed: 2 },
     ],
     reports: [],
     currentEmployeeId: "e1",
@@ -149,10 +149,10 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     async function fetchData() {
       try {
         const { data: tasks, error: tErr } = await supabase.auth.getSession().then(() => 
-          supabase.from("tasks").select("*").order("createdAt", { ascending: false })
+          supabase.from("tasks").select("*").order("created_at", { ascending: false })
         );
         const { data: employees, error: eErr } = await supabase.from("employees").select("*");
-        const { data: reports, error: rErr } = await supabase.from("reports").select("*").order("submittedAt", { ascending: false });
+        const { data: reports, error: rErr } = await supabase.from("reports").select("*").order("submitted_at", { ascending: false });
 
         if (tErr || eErr || rErr) {
           console.warn("Error fetching from Supabase, using local state:", { tErr, eErr, rErr });
@@ -182,11 +182,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             title: t.title,
             description: t.description,
             priority: t.priority,
-            dueDate: t.dueDate,
-            assigneeId: t.assigneeId,
+            due_date: t.due_date,
+            assignee_id: t.assignee_id,
             ref,
             status: "pending",
-            createdBy: "Admin",
+            created_by: "Admin",
           },
         ])
         .select()
@@ -227,7 +227,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       .insert([
         {
           ...e,
-          avatarSeed: Math.floor(Math.random() * 100),
+          avatar_seed: Math.floor(Math.random() * 100),
         },
       ])
       .select()
@@ -260,7 +260,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         .insert([
           {
             ...r,
-            submittedAt: new Date().toISOString(),
+            submitted_at: new Date().toISOString(),
           },
         ])
         .select()
