@@ -28,8 +28,14 @@ const Ctx = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mockAdmin, setMockAdmin] = useState(false);
 
-  const role: Role = user?.user_metadata?.role === "admin" ? "admin" : "employee";
+  const role: Role = useMemo(() => {
+    if (mockAdmin) return "admin";
+    return user?.user_metadata?.role === "admin" ? "admin" : "employee";
+  }, [user, mockAdmin]);
+
+  const isAdmin = role === "admin";
 
   useEffect(() => {
     // Get initial session
@@ -52,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginAdmin = useCallback((password: string) => {
     // Temporary mock for admin login until real admin accounts are set up
     if (password === "Modern@2026$") {
-      // In a real app, you would sign in with an admin email/pass
+      setMockAdmin(true);
       return true;
     }
     return false;
@@ -60,30 +66,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, pass: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (!error) setMockAdmin(false); // Reset mock admin if real login succeeds
     return { error: error as Error | null };
   }, []);
 
   const logout = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
+    setMockAdmin(false);
     return { error: error as Error | null };
   }, []);
 
   const setEmployeeMode = useCallback(() => {
-    // This could optionally sign out or just change UI state
+    setMockAdmin(false);
   }, []);
 
   const value = useMemo<AuthState>(
     () => ({
       user,
       role,
-      isAdmin: role === "admin",
+      isAdmin,
       isLoading,
       loginAdmin,
       login,
       logout,
       setEmployeeMode,
     }),
-    [user, role, isLoading, loginAdmin, login, logout, setEmployeeMode],
+    [user, role, isAdmin, isLoading, loginAdmin, login, logout, setEmployeeMode],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { supabase } from "@/lib/supabase";
 
 export type Priority = "urgent" | "medium" | "low";
 export type TaskStatus = "pending" | "acknowledged" | "completed";
@@ -136,73 +137,66 @@ const API_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.repl
 export function TaskProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<Persisted>({
     tasks: [],
-    employees: [],
+    employees: [
+      { id: "e1", name: "Ahmed", role: "Driver", avatarSeed: 1 },
+      { id: "e2", name: "Mohamed", role: "Dispatcher", avatarSeed: 2 },
+    ],
     reports: [],
     currentEmployeeId: "e1",
   });
 
   useEffect(() => {
     async function fetchData() {
-      if (!API_URL) {
-        console.warn("VITE_API_URL is not defined. Using mock data or failing gracefully.");
-        return;
-      }
-
       try {
-        const [tasksRes, employeesRes, reportsRes] = await Promise.all([
-          fetch(`${API_URL}/tasks`),
-          fetch(`${API_URL}/employees`),
-          fetch(`${API_URL}/reports`),
-        ]);
+        const { data: tasks, error: tErr } = await supabase.auth.getSession().then(() => 
+          supabase.from("tasks").select("*").order("createdAt", { ascending: false })
+        );
+        const { data: employees, error: eErr } = await supabase.from("employees").select("*");
+        const { data: reports, error: rErr } = await supabase.from("reports").select("*").order("submittedAt", { ascending: false });
 
-        if (!tasksRes.ok || !employeesRes.ok || !reportsRes.ok) {
-          throw new Error("حدث خطأ في جلب البيانات من السيرفر. تأكد من تشغيل الباكيند.");
+        if (tErr || eErr || rErr) {
+          console.warn("Error fetching from Supabase, using local state:", { tErr, eErr, rErr });
+          return;
         }
-
-        const tasks = await tasksRes.json();
-        const employees = await employeesRes.json();
-        const reports = await reportsRes.json();
 
         setState((prev) => ({
           ...prev,
-          tasks,
-          employees,
-          reports,
-          currentEmployeeId: employees.length > 0 ? employees[0].id : prev.currentEmployeeId,
+          tasks: tasks || prev.tasks,
+          employees: employees || prev.employees,
+          reports: reports || prev.reports,
+          currentEmployeeId: (employees && employees.length > 0) ? employees[0].id : prev.currentEmployeeId,
         }));
       } catch (error) {
-        console.error("فشل الاتصال بالسيرفر:", error);
+        console.error("فشل الاتصال بسوبابيس:", error);
       }
     }
     fetchData();
   }, []);
   const addTask: Store["addTask"] = useCallback(async (t) => {
     try {
-      const response = await fetch(`${API_URL}/tasks`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: t.title,
-          description: t.description,
-          priority: t.priority,
-          dueDate: t.dueDate,
-          assigneeId: t.assigneeId, // التأكيد على إرساله بشكل صريح للـ Backend
-          ref: genRef(),
-          status: "pending",
-          createdBy: "Admin",
-          createdAt: new Date().toISOString(),
-        }),
-      });
+      const ref = genRef();
+      const { data, error } = await supabase
+        .from("tasks")
+        .insert([
+          {
+            title: t.title,
+            description: t.description,
+            priority: t.priority,
+            dueDate: t.dueDate,
+            assigneeId: t.assigneeId,
+            ref,
+            status: "pending",
+            createdBy: "Admin",
+          },
+        ])
+        .select()
+        .single();
 
-      if (!response.ok) {
-        throw new Error("Failed to add task");
-      }
-
-      const newTask = await response.json();
+      if (error) throw error;
 
       setState((s) => ({
         ...s,
-        tasks: [newTask, ...s.tasks],
+        tasks: [data, ...s.tasks],
       }));
     } catch (error) {
       console.error("Error adding task:", error);
@@ -210,13 +204,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateTaskStatus: Store["updateTaskStatus"] = useCallback(async (id, status) => {
-    await fetch(`${API_URL}/tasks/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status }),
-    });
+    await supabase.from("tasks").update({ status }).eq("id", id);
 
     setState((s) => ({
       ...s,
@@ -225,9 +213,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteTask: Store["deleteTask"] = useCallback(async (id) => {
-    await fetch(`${API_URL}/tasks/${id}`, {
-      method: "DELETE",
-    });
+    await supabase.from("tasks").delete().eq("id", id);
 
     setState((s) => ({
       ...s,
@@ -236,29 +222,30 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addEmployee: Store["addEmployee"] = useCallback(async (e) => {
-    const response = await fetch(`${API_URL}/employees`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...e,
-        avatarSeed: Math.floor(Math.random() * 100),
-      }),
-    });
+    const { data, error } = await supabase
+      .from("employees")
+      .insert([
+        {
+          ...e,
+          avatarSeed: Math.floor(Math.random() * 100),
+        },
+      ])
+      .select()
+      .single();
 
-    const newEmployee = await response.json();
+    if (error) {
+      console.error("Error adding employee:", error);
+      return;
+    }
 
     setState((s) => ({
       ...s,
-      employees: [...s.employees, newEmployee],
+      employees: [...s.employees, data],
     }));
   }, []);
 
   const removeEmployee: Store["removeEmployee"] = useCallback(async (id) => {
-    await fetch(`${API_URL}/employees/${id}`, {
-      method: "DELETE",
-    });
+    await supabase.from("employees").delete().eq("id", id);
 
     setState((s) => ({
       ...s,
@@ -268,27 +255,25 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
   const addReport: Store["addReport"] = useCallback(async (r) => {
     try {
-      const response = await fetch(`${API_URL}/reports`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...r,
-          submittedAt: new Date().toISOString(),
-        }),
-      });
+      const { data, error } = await supabase
+        .from("reports")
+        .insert([
+          {
+            ...r,
+            submittedAt: new Date().toISOString(),
+          },
+        ])
+        .select()
+        .single();
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to submit report");
-      }
+      if (error) throw error;
 
-      const newReport = await response.json();
       setState((s) => ({
         ...s,
-        reports: [newReport, ...s.reports],
+        reports: [data, ...s.reports],
       }));
 
-      alert("تم إرسال التقرير بنجاح!"); // للتأكد من النجاح
+      alert("تم إرسال التقرير بنجاح!");
     } catch (error) {
       console.error("Error adding report:", error);
       alert("فشل إرسال التقرير، راجعي الكونسول.");
@@ -296,9 +281,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteReport: Store["deleteReport"] = useCallback(async (id) => {
-    await fetch(`${API_URL}/reports/${id}`, {
-      method: "DELETE",
-    });
+    await supabase.from("reports").delete().eq("id", id);
 
     setState((s) => ({
       ...s,
