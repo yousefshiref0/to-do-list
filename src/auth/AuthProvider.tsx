@@ -23,26 +23,38 @@ interface AuthState {
   setEmployeeMode: () => void;
 }
 
-const Ctx = createContext<AuthState | null>(null);
+const INITIAL_AUTH: AuthState = {
+  user: null,
+  role: "employee",
+  isAdmin: false,
+  isLoading: true,
+  loginAdmin: () => false,
+  login: async () => ({ error: null }),
+  logout: async () => ({ error: null }),
+  setEmployeeMode: () => {},
+};
+
+const Ctx = createContext<AuthState>(INITIAL_AUTH);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const role: Role = useMemo(() => {
-    return user?.user_metadata?.role === "admin" ? "admin" : "employee";
+    if (!user) return "employee";
+    return user.user_metadata?.role === "admin" ? "admin" : "employee";
   }, [user]);
 
-  const isAdmin = role === "admin";
+  const isAdmin = useMemo(() => role === "admin", [role]);
 
   useEffect(() => {
     let mounted = true;
 
     async function initAuth() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data } = await supabase.auth.getUser();
         if (mounted) {
-          setUser(user);
+          setUser(data.user);
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
@@ -58,8 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+      if (mounted) {
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
     });
 
     return () => {
@@ -69,7 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loginAdmin = useCallback((_password: string) => {
-    // Deprecated: Real admin login should use login() with email/password
     return false;
   }, []);
 
@@ -91,9 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setEmployeeMode = useCallback(() => {
-    // No-op in real auth mode unless we implement switching via metadata
-  }, []);
+  const setEmployeeMode = useCallback(() => {}, []);
 
   const value = useMemo<AuthState>(
     () => ({
@@ -114,6 +125,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
+  return ctx ?? INITIAL_AUTH;
 }
