@@ -9,11 +9,11 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   cloudflare: false,
   tanstackStart: {
-    ssr: false,
+    ssr: false
   },
   vite: {
     server: {
-      allowedHosts: true,
-    },
-  },
+      allowedHosts: true
+    }
+  }
 });

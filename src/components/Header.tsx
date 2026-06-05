@@ -12,46 +12,25 @@ export function Header() {
   const { t, lang, toggleLang } = useI18n();
   const { theme, toggle } = useTheme();
   const { employees, currentEmployeeId, setCurrentEmployeeId } = useStore();
-  const { isAdmin, logout, login } = useAuth();
+  const { isAdmin, loginAdmin, logoutAdmin } = useAuth();
   const navigate = useNavigate();
 
   const [loginOpen, setLoginOpen] = useState(false);
-  const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [err, setErr] = useState("");
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const me = (employees || []).find((e) => e?.id === currentEmployeeId) ?? (employees || [])[0];
+  const me = employees.find((e) => e.id === currentEmployeeId) ?? employees[0];
 
-  const submitLogin = async (e: FormEvent) => {
+  const submitLogin = (e: FormEvent) => {
     e.preventDefault();
-    if (!email || !pwd) return;
-    
-    setIsLoggingIn(true);
-    setErr("");
-    
-    const { error, user: loggedInUser } = await login(email, pwd);
-    
-    if (error) {
-      setErr(t.auth.wrong || "خطأ في تسجيل الدخول");
-      setIsLoggingIn(false);
-    } else {
+    if (loginAdmin(pwd)) {
       setLoginOpen(false);
       setPwd("");
-      setEmail("");
-      setIsLoggingIn(false);
-
-      const userRole = loggedInUser?.user_metadata?.role;
-      console.log("[Header] Login success — role:", userRole ?? "employee");
-
-      if (userRole === "admin") {
-        console.log("[Header] Admin detected — redirecting to /admin");
-        navigate({ to: "/admin", replace: true });
-      } else {
-        console.log("[Header] Employee detected — redirecting to /dashboard");
-        navigate({ to: "/dashboard", replace: true });
-      }
+      setErr("");
+      navigate({ to: "/" });
+    } else {
+      setErr(t.auth.wrong);
     }
   };
 
@@ -61,14 +40,14 @@ export function Header() {
         {/* Left: brand + home */}
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <Link
-            to="/dashboard"
+            to="/"
             className="lg:hidden flex items-center gap-2 shrink-0"
             aria-label={t.header.home}
           >
             <Logo size={36} />
           </Link>
           <Link
-            to="/dashboard"
+            to="/"
             className="hidden sm:inline-flex items-center gap-2 rounded-full border border-border bg-surface hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground transition"
             title={t.header.home}
           >
@@ -117,16 +96,18 @@ export function Header() {
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </button>
 
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-xs font-bold uppercase tracking-widest hover:opacity-90 shadow-elevated transition"
+          {isAdmin ? (
+            <button
+              onClick={() => {
+                logoutAdmin();
+                navigate({ to: "/" });
+              }}
+              className="hidden sm:inline-flex items-center gap-2 rounded-full border border-border bg-surface hover:bg-urgent-soft hover:text-urgent transition px-3 py-2 text-xs font-semibold text-foreground"
             >
-              <Lock className="size-3.5" />
-              <span>Admin</span>
-            </Link>
-          )}
-          {!isAdmin && (
+              <LogOut className="size-3.5" />
+              <span>{t.header.logout}</span>
+            </button>
+          ) : (
             <button
               onClick={() => setLoginOpen(true)}
               className="inline-flex items-center gap-2 rounded-full bg-foreground text-background hover:opacity-90 transition px-3 sm:px-4 py-2 text-xs font-semibold"
@@ -135,7 +116,21 @@ export function Header() {
               <span className="hidden sm:inline">{t.header.adminLogin}</span>
             </button>
           )}
-          {/* Admin login and employee selection hidden for bypassed auth flow */}
+
+          {/* Employee selector — only when not admin (employees pick who they are) */}
+          {!isAdmin && (
+            <select
+              value={currentEmployeeId}
+              onChange={(e) => setCurrentEmployeeId(e.target.value)}
+              className="hidden md:block bg-surface border border-border rounded-full px-3 py-1.5 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-ring max-w-[160px]"
+            >
+              {employees.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.name}
+                </option>
+              ))}
+            </select>
+          )}
 
           <div className="hidden lg:flex items-center gap-3 ps-3 border-s border-border">
             <div className="text-end">
@@ -198,21 +193,6 @@ export function Header() {
             </div>
             <label className="block mt-6">
               <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-2 block">
-                {t.auth.email || "Email"}
-              </span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setErr("");
-                }}
-                autoFocus
-                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-              />
-            </label>
-            <label className="block mt-4">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-2 block">
                 {t.auth.password}
               </span>
               <input
@@ -222,6 +202,7 @@ export function Header() {
                   setPwd(e.target.value);
                   setErr("");
                 }}
+                autoFocus
                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               />
             </label>
@@ -236,7 +217,6 @@ export function Header() {
                 onClick={() => {
                   setLoginOpen(false);
                   setPwd("");
-                  setEmail("");
                   setErr("");
                 }}
                 className="flex-1 px-4 py-3 rounded-xl border border-border text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -245,13 +225,9 @@ export function Header() {
               </button>
               <button
                 type="submit"
-                disabled={isLoggingIn}
-                className={cn(
-                  "flex-1 px-4 py-3 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest transition",
-                  isLoggingIn ? "opacity-50 cursor-not-allowed" : "hover:opacity-90",
-                )}
+                className="flex-1 px-4 py-3 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest hover:opacity-90"
               >
-                {isLoggingIn ? t.common.loading || "..." : t.auth.enter}
+                {t.auth.enter}
               </button>
             </div>
           </form>
@@ -263,7 +239,7 @@ export function Header() {
 
 function MobileDrawer({ onClose, onLogin }: { onClose: () => void; onLogin: () => void }) {
   const { t } = useI18n();
-  const { isAdmin, logout } = useAuth();
+  const { isAdmin, logoutAdmin } = useAuth();
   const { employees, currentEmployeeId, setCurrentEmployeeId } = useStore();
 
   const links = [
@@ -307,7 +283,24 @@ function MobileDrawer({ onClose, onLogin }: { onClose: () => void; onLogin: () =
           </select>
         )}
         <div className="pt-3 border-t border-border">
-            {/* Auth buttons hidden in mobile drawer for bypassed flow */}
+          {isAdmin ? (
+            <button
+              onClick={() => {
+                logoutAdmin();
+                onClose();
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border text-xs font-bold uppercase tracking-widest hover:bg-urgent-soft hover:text-urgent"
+            >
+              <LogOut className="size-3.5" /> {t.header.logout}
+            </button>
+          ) : (
+            <button
+              onClick={onLogin}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest"
+            >
+              <Lock className="size-3.5" /> {t.header.adminLogin}
+            </button>
+          )}
         </div>
       </nav>
     </div>

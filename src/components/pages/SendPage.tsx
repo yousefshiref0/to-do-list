@@ -10,24 +10,19 @@ import { cn } from "@/lib/utils";
 export function SendPage() {
   const { t } = useI18n();
   const { employees, addTask } = useStore();
-  const { user, isAdmin, isLoading } = useAuth();
+  const { isAdmin } = useAuth();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assignee_id, setAssigneeId] = useState<string>("all");
+  const [assigneeId, setAssigneeId] = useState<string>("all");
   const [priority, setPriority] = useState<Priority>("medium");
-  const [due_date, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-background">
-        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!isAdmin) navigate({ to: "/" });
+  }, [isAdmin, navigate]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -35,7 +30,7 @@ export function SendPage() {
       setError(t.send.validation);
       return;
     }
-    addTask({ title, description, assignee_id, priority, due_date: due_date || undefined });
+    addTask({ title, description, assigneeId, priority, dueDate: dueDate || undefined });
     setSuccess(true);
     setTimeout(() => navigate({ to: "/" }), 900);
   };
@@ -83,7 +78,7 @@ export function SendPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <Field label={t.send.assignLabel}>
               <select
-                value={assignee_id}
+                value={assigneeId}
                 onChange={(e) => setAssigneeId(e.target.value)}
                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
@@ -96,7 +91,7 @@ export function SendPage() {
               </select>
             </Field>
 
-            <DateInput label={t.send.dueLabel} value={due_date} onChange={setDueDate} />
+            <DateInput label={t.send.dueLabel} value={dueDate} onChange={setDueDate} />
           </div>
 
           <Field label={t.send.priorityLabel}>

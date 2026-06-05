@@ -7,20 +7,18 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "prisma generate",
-    "postinstall": "prisma generate",
-    "test": "node --test"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.19.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "@prisma/client": "^6.19.3",
     "nodemon": "^3.1.14",
     "prisma": "^6.19.3"
   }

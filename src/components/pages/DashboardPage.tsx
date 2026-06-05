@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Plus, ClipboardList, Lock } from "lucide-react";
+import { ArrowRight, Plus, ClipboardList } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useStore, type Priority } from "@/store/tasks";
@@ -13,8 +13,8 @@ type Filter = "all" | Priority;
 
 export function DashboardPage() {
   const { t } = useI18n();
-  const { tasks = [], employees = [], currentEmployeeId } = useStore();
-  const { user, isAdmin, isLoading } = useAuth();
+  const { tasks, employees, currentEmployeeId } = useStore();
+  const { isAdmin } = useAuth();
   const [filter, setFilter] = useState<Filter>("all");
   const fmt = useFormatters();
   const [clock, setClock] = useState<string>("");
@@ -29,35 +29,24 @@ export function DashboardPage() {
     return () => clearInterval(id);
   }, []);
 
-
   const visibleTasks = useMemo(() => {
     const base = isAdmin
       ? tasks
-      : tasks.filter((x) => x.assignee_id === currentEmployeeId || x.assignee_id === "all");
+      : tasks.filter((x) => x.assigneeId === currentEmployeeId || x.assigneeId === "all");
     return filter === "all" ? base : base.filter((tk) => tk.priority === filter);
   }, [tasks, filter, isAdmin, currentEmployeeId]);
-
-  if (isLoading && !user) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-background">
-        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
-  }
-
-  // Unauthenticated landing state removed for instant access
 
   const total = tasks.length;
   const pending = tasks.filter((x) => x.status !== "completed").length;
   const completed = tasks.filter((x) => x.status === "completed").length;
 
-  const teamProgress = (employees || []).map((e) => {
-    const mine = (tasks || []).filter((t) => t.assignee_id === e.id || t.assignee_id === "all");
-
-    const done = mine.filter((t) => t.status === "completed").length;
-    const pct = mine.length === 0 ? 0 : Math.round((done / mine.length) * 100);
-    return { ...e, pct, total: mine.length, done };
-  });
+ const teamProgress = employees.map((e) => {
+  const mine = tasks.filter((t) => t.assigneeId === e.id || t.assigneeId === "all");
+  
+  const done = mine.filter((t) => t.status === "completed").length;
+  const pct = mine.length === 0 ? 0 : Math.round((done / mine.length) * 100);
+  return { ...e, pct, total: mine.length, done };
+});
 
   return (
     <AppShell>
@@ -90,15 +79,6 @@ export function DashboardPage() {
                 {t.nav.checklist}
               </Link>
             )}
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="inline-flex items-center gap-2 self-start rounded-full border border-border bg-surface px-5 py-3 text-sm font-semibold shadow-soft hover:bg-accent transition"
-              >
-                <Lock className="size-4" />
-                Admin Dashboard
-              </Link>
-            )}
           </div>
         </div>
 
@@ -129,9 +109,7 @@ export function DashboardPage() {
           {/* Instructions list */}
           <section className="xl:col-span-8 bg-surface rounded-3xl border border-border overflow-hidden shadow-soft">
             <div className="px-6 sm:px-8 py-6 border-b border-border flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-display font-bold text-xl text-foreground">
-                {t.dashboard.subtitle}
-              </h2>
+              <h2 className="font-display font-bold text-xl text-foreground">{t.dashboard.subtitle}</h2>
               <div className="flex flex-wrap gap-2">
                 {(["all", "urgent", "medium", "low"] as Filter[]).map((f) => (
                   <button
@@ -164,9 +142,9 @@ export function DashboardPage() {
               <div className="divide-y divide-border">
                 {visibleTasks.map((task) => {
                   const assignee =
-                    task.assignee_id === "all"
-                      ? { name: t?.send?.assignAll, role: "" }
-                      : (employees || []).find((e) => e?.id === task?.assignee_id);
+                    task.assigneeId === "all"
+                      ? { name: t.send.assignAll, role: "" }
+                      : employees.find((e) => e.id === task.assigneeId);
                   return (
                     <article
                       key={task.id}
@@ -194,7 +172,7 @@ export function DashboardPage() {
                       <div className="flex flex-col items-end gap-3 shrink-0">
                         <StatusBadge status={task.status} />
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                          {t.common.issued} · {fmt.ago(new Date(task?.created_at || Date.now()).getTime())}
+                          {t.common.issued} · {fmt.ago(new Date(task.createdAt).getTime())}
                         </p>
                       </div>
                     </article>
@@ -245,16 +223,10 @@ export function DashboardPage() {
               </p>
               <div className="flex justify-between items-end mt-6">
                 <div>
-                  <p
-                    className="text-3xl font-display font-bold tabular-nums"
-                    suppressHydrationWarning
-                  >
+                  <p className="text-3xl font-display font-bold tabular-nums" suppressHydrationWarning>
                     {clock || "—"}
                   </p>
-                  <p
-                    className="text-[10px] uppercase opacity-60 tracking-widest"
-                    suppressHydrationWarning
-                  >
+                  <p className="text-[10px] uppercase opacity-60 tracking-widest" suppressHydrationWarning>
                     {tz}
                   </p>
                 </div>

@@ -7,138 +7,70 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { supabase } from "@/lib/supabase";
-import type { User } from "@supabase/supabase-js";
-import { useNavigate } from "@tanstack/react-router";
+
+const STORAGE_KEY = "me.auth.v1";
+const ADMIN_PASSWORD = "Modern@2026$";
 
 export type Role = "admin" | "employee";
 
 interface AuthState {
-  user: User | null;
   role: Role;
   isAdmin: boolean;
-  isLoading: boolean;
-  login: (email: string, pass: string) => Promise<{ error: Error | null; user: User | null }>;
-  logout: () => Promise<{ error: Error | null }>;
+  loginAdmin: (password: string) => boolean;
+  logoutAdmin: () => void;
+  setEmployeeMode: () => void;
 }
 
-const INITIAL_AUTH: AuthState = {
-  user: null,
-  role: "employee",
-  isAdmin: false,
-  isLoading: true,
-  login: async () => ({ error: null, user: null }),
-  logout: async () => ({ error: null }),
-};
+const Ctx = createContext<AuthState | null>(null);
 
-const Ctx = createContext<AuthState>(INITIAL_AUTH);
+interface Persisted {
+  role: Role;
+}
+
+function load(): Persisted {
+  if (typeof window === "undefined") return { role: "employee" };
+  try {
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as Persisted;
+  } catch {
+    /* ignore */
+  }
+  return { role: "employee" };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-
-  const role: Role = useMemo(() => {
-    if (!user) return "employee";
-    return user.user_metadata?.role === "admin" ? "admin" : "employee";
-  }, [user]);
-
-  const isAdmin = useMemo(() => role === "admin", [role]);
+  const [role, setRole] = useState<Role>("employee");
 
   useEffect(() => {
-    let mounted = true;
-
-    async function initAuth() {
-      try {
-        const {
-          data: { user: currentUser },
-        } = await supabase.auth.getUser();
-        if (mounted) {
-          setUser(currentUser);
-        }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    initAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted) {
-        const newUser = session?.user ?? null;
-        setUser(newUser);
-        setIsLoading(false);
-
-        if (_event === "SIGNED_IN" && newUser) {
-          console.log("[Auth] SIGNED_IN event — role:", newUser.user_metadata?.role ?? "employee");
-          // Navigation is handled by the login caller (Header), not here,
-          // so admin logins can redirect to /admin.
-        }
-
-        if (_event === "SIGNED_OUT") {
-          console.log("[Auth] SIGNED_OUT event — redirecting to /");
-          navigate({ to: "/", replace: true });
-        }
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
-
-  // Navigation guards removed for instant dashboard access
-
-  const login = useCallback(async (email: string, pass: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-      if (error) {
-        console.error("[Auth] Login failed:", error.message);
-        return { error: error as Error, user: null };
-      }
-      const loggedInUser = data.user;
-      console.log("[Auth] Login success — user:", loggedInUser?.email, "role:", loggedInUser?.user_metadata?.role ?? "employee");
-      return { error: null, user: loggedInUser };
-    } catch (error) {
-      console.error("[Auth] Login exception:", error);
-      return { error: error as Error, user: null };
-    }
+    setRole(load().role);
   }, []);
 
-  const logout = useCallback(async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      return { error: error as Error | null };
-    } catch (error) {
-      return { error: error as Error };
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ role }));
+  }, [role]);
+
+  const loginAdmin = useCallback((password: string) => {
+    if (password === ADMIN_PASSWORD) {
+      setRole("admin");
+      return true;
     }
+    return false;
   }, []);
+
+  const logoutAdmin = useCallback(() => setRole("employee"), []);
+  const setEmployeeMode = useCallback(() => setRole("employee"), []);
 
   const value = useMemo<AuthState>(
-    () => ({
-      user,
-      role,
-      isAdmin,
-      isLoading,
-      login,
-      logout,
-    }),
-    [user, role, isAdmin, isLoading, login, logout],
+    () => ({ role, isAdmin: role === "admin", loginAdmin, logoutAdmin, setEmployeeMode }),
+    [role, loginAdmin, logoutAdmin, setEmployeeMode],
   );
-
-  // Loading spinner removed for instant access
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {
   const ctx = useContext(Ctx);
-  return ctx ?? INITIAL_AUTH;
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
 }

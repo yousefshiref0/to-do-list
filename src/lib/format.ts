@@ -25,19 +25,19 @@ export function useFormatters() {
     date: (s?: string | number) => {
       if (!s) return null;
       const d = new Date(s);
-      const day = d.getDate().toString().padStart(2, "0");
-      const month = (d.getMonth() + 1).toString().padStart(2, "0");
+      const day = d.getDate().toString().padStart(2, '0');
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
       const year = d.getFullYear();
       return `${day}/${month}/${year}`;
     },
     datetime: (s?: string | number) => {
       if (!s) return null;
       const d = new Date(s);
-      const day = d.getDate().toString().padStart(2, "0");
-      const month = (d.getMonth() + 1).toString().padStart(2, "0");
+      const day = d.getDate().toString().padStart(2, '0');
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
       const year = d.getFullYear();
-      const hours = d.getHours().toString().padStart(2, "0");
-      const mins = d.getMinutes().toString().padStart(2, "0");
+      const hours = d.getHours().toString().padStart(2, '0');
+      const mins = d.getMinutes().toString().padStart(2, '0');
       return `${day}/${month}/${year} ${hours}:${mins}`;
     },
   };

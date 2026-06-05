@@ -21,42 +21,17 @@ export function Sidebar() {
   const { isAdmin } = useAuth();
 
   const items = [
-    { to: "/dashboard" as const, label: t.nav.home, icon: Home, adminOnly: false, employeeOnly: false },
-    {
-      to: "/dashboard" as const,
-      label: t.nav.dashboard,
-      icon: LayoutDashboard,
-      adminOnly: false,
-      employeeOnly: false,
-      hidden: true,
-    },
-    {
-      to: "/my-tasks" as const,
-      label: t.nav.myTasks,
-      icon: ListChecks,
-      adminOnly: false,
-      employeeOnly: true,
-    },
-    {
-      to: "/checklist" as const,
-      label: t.nav.checklist,
-      icon: ClipboardList,
-      adminOnly: false,
-      employeeOnly: true,
-    },
+    { to: "/" as const, label: t.nav.home, icon: Home, adminOnly: false, employeeOnly: false },
+    { to: "/" as const, label: t.nav.dashboard, icon: LayoutDashboard, adminOnly: false, employeeOnly: false, hidden: true },
+    { to: "/my-tasks" as const, label: t.nav.myTasks, icon: ListChecks, adminOnly: false, employeeOnly: true },
+    { to: "/checklist" as const, label: t.nav.checklist, icon: ClipboardList, adminOnly: false, employeeOnly: true },
     { to: "/send" as const, label: t.nav.send, icon: Send, adminOnly: true, employeeOnly: false },
     { to: "/team" as const, label: t.nav.team, icon: Users, adminOnly: true, employeeOnly: false },
-    {
-      to: "/reports" as const,
-      label: t.nav.reports,
-      icon: FileText,
-      adminOnly: true,
-      employeeOnly: false,
-    },
+    { to: "/reports" as const, label: t.nav.reports, icon: FileText, adminOnly: true, employeeOnly: false },
   ].filter((i) => !i.hidden && (isAdmin ? !i.employeeOnly : !i.adminOnly));
 
-  const pending = (tasks || []).filter((x) => x?.status !== "completed").length;
-  const completed = (tasks || []).filter((x) => x?.status === "completed").length;
+  const pending = tasks.filter((x) => x.status !== "completed").length;
+  const completed = tasks.filter((x) => x.status === "completed").length;
 
   return (
     <aside className="hidden lg:flex w-72 shrink-0 flex-col border-e border-border bg-sidebar">
@@ -70,7 +45,7 @@ export function Sidebar() {
         </div>
         {items.map(({ to, label, icon: Icon }, idx) => {
           const active =
-            (to === "/dashboard" && pathname === "/dashboard") || (to !== "/dashboard" && pathname.startsWith(to));
+            (to === "/" && pathname === "/") || (to !== "/" && pathname.startsWith(to));
           return (
             <Link
               key={`${to}-${idx}`}

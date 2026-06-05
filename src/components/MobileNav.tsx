@@ -11,26 +11,22 @@ export function MobileNav() {
 
   const items = isAdmin
     ? [
-        { to: "/dashboard" as const, label: t.nav.home, icon: Home },
+        { to: "/" as const, label: t.nav.home, icon: Home },
         { to: "/send" as const, label: t.nav.send, icon: Send },
         { to: "/team" as const, label: t.nav.team, icon: Users },
         { to: "/reports" as const, label: t.nav.reports, icon: FileText },
       ]
     : [
-        { to: "/dashboard" as const, label: t.nav.home, icon: Home },
+        { to: "/" as const, label: t.nav.home, icon: Home },
         { to: "/my-tasks" as const, label: t.nav.myTasks, icon: ListChecks },
         { to: "/checklist" as const, label: t.nav.checklist, icon: ClipboardList },
       ];
 
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-lg border-t border-border shadow-elevated">
-      <div
-        className="grid"
-        style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0,1fr))` }}
-      >
+      <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0,1fr))` }}>
         {items.map(({ to, label, icon: Icon }) => {
-          const active =
-            (to === "/dashboard" && pathname === "/dashboard") || (to !== "/dashboard" && pathname.startsWith(to));
+          const active = (to === "/" && pathname === "/") || (to !== "/" && pathname.startsWith(to));
           return (
             <Link
               key={to}

@@ -1,7 +1,5 @@
 import { CheckCircle2, Eye, RotateCcw } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { Link } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useStore } from "@/store/tasks";
 import { PriorityBadge, PriorityDot, StatusBadge } from "@/components/Badges";
@@ -10,23 +8,14 @@ import { useAuth } from "@/auth/AuthProvider";
 
 export function MyTasksPage() {
   const { t } = useI18n();
-  const { tasks = [], employees = [], currentEmployeeId, updateTaskStatus } = useStore();
-  const { user, isAdmin, isLoading } = useAuth();
+  const { tasks, employees, currentEmployeeId, updateTaskStatus } = useStore();
+  const { isAdmin } = useAuth();
   const fmt = useFormatters();
 
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-background">
-        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
-  }
-
-  const me = (employees || []).find((e) => e.id === currentEmployeeId);
-  const myTasks = isAdmin
-    ? (tasks || [])
-    : (tasks || []).filter((x) => x?.assignee_id === currentEmployeeId || x?.assignee_id === "all");
+  const me = employees.find((e) => e.id === currentEmployeeId);
+  const myTasks = isAdmin 
+    ? tasks 
+    : tasks.filter((x) => x.assigneeId === currentEmployeeId || x.assigneeId === "all");
 
   return (
     <AppShell>
@@ -43,9 +32,7 @@ export function MyTasksPage() {
 
         {myTasks.length === 0 ? (
           <div className="bg-surface border border-border rounded-3xl p-16 text-center shadow-soft">
-            <div className="font-display font-semibold text-2xl text-foreground">
-              {t.myTasks.empty}
-            </div>
+            <div className="font-display font-semibold text-2xl text-foreground">{t.myTasks.empty}</div>
           </div>
         ) : (
           <div className="space-y-4">
@@ -69,8 +56,8 @@ export function MyTasksPage() {
                     </h3>
                     <p className="text-sm text-muted-foreground mt-2">{task.description}</p>
                     <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-3">
-                      {t.common.issued} · {fmt.ago(new Date(task?.created_at || Date.now()).getTime())}
-                      {task.due_date ? ` · ${t.common.due} ${fmt.date(task.due_date)}` : ""}
+                      {t.common.issued} · {fmt.ago(new Date(task.createdAt).getTime())}
+                      {task.dueDate ? ` · ${t.common.due} ${fmt.date(task.dueDate)}` : ""}
                     </div>
                   </div>
                 </div>

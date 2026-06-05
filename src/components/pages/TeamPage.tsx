@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Plus, Trash2, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -8,19 +9,15 @@ import { useAuth } from "@/auth/AuthProvider";
 export function TeamPage() {
   const { t } = useI18n();
   const { employees, tasks, addEmployee, removeEmployee } = useStore();
-  const { user, isAdmin, isLoading } = useAuth();
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
 
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-background">
-        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!isAdmin) navigate({ to: "/" });
+  }, [isAdmin, navigate]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -53,13 +50,10 @@ export function TeamPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {(employees || []).map((e) => {
-            const assigned = (tasks || []).filter(
-              (x) => x?.assignee_id === e?.id || x?.assignee_id === "all",
-            ).length;
-            const done = (tasks || []).filter(
-              (x) => (x?.assignee_id === e?.id || x?.assignee_id === "all") && x?.status === "completed",
-            ).length;
+          {employees.map((e) => {
+            const assigned = tasks.filter((x) => x.assigneeId === e.id || x.assigneeId === "all").length;
+            const done = tasks.filter((x) => (x.assigneeId === e.id || x.assigneeId === "all") && x.status === "completed")
+              .length;
             return (
               <div
                 key={e.id}
