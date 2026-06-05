@@ -8,31 +8,40 @@ const app = express();
 const ALLOWED_ORIGINS = [
   "https://to-do-list-beta-sandy-89.vercel.app",
   "https://to-do-list-of-modern-company-1wxc.vercel.app",
-  // allow any extra domain set via env var (e.g. staging)
-  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (server-to-server, curl, etc.)
-    if (!origin) return callback(null, true);
-    if (ALLOWED_ORIGINS.includes(origin) || origin.startsWith("http://localhost")) {
-      return callback(null, origin); // echo back the exact origin
-    }
-    return callback(new Error(`CORS blocked for origin: ${origin}`));
-  },
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+// Raw CORS middleware — runs before cors() package to ensure correct origin is always echoed.
+// This overrides any env-var interference.
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (ALLOWED_ORIGINS.includes(origin) || origin.startsWith("http://localhost"))) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-// Handle OPTIONS preflight for all routes
-app.options("*", cors());
+  // Respond immediately to OPTIONS preflight
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 app.use(express.json());
 
+// === CORS debug endpoint — remove after confirming fix ===
+app.get("/cors-debug", (req, res) => {
+  res.json({
+    origin: req.headers.origin || "none",
+    allowed: ALLOWED_ORIGINS,
+    corsOk: ALLOWED_ORIGINS.includes(req.headers.origin || ""),
+    deployedAt: "2026-06-05T07:30:00Z",
+  });
+});
 
-// === 🌟 التعديل الأول: مسار ترحيبي للدومين الرئيسي ===
+
 app.get("/", (_, res) => {
   res.json({ message: "🚀 Backend server is running successfully on Vercel!" });
 });
