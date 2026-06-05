@@ -107,41 +107,7 @@ export function Header() {
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </button>
 
-          {isAdmin ? (
-            <button
-              onClick={async () => {
-                await logout();
-                // Removed manual navigate({ to: "/" }) as it's handled globally by AuthProvider
-              }}
-              className="hidden sm:inline-flex items-center gap-2 rounded-full border border-border bg-surface hover:bg-urgent-soft hover:text-urgent transition px-3 py-2 text-xs font-semibold text-foreground"
-            >
-              <LogOut className="size-3.5" />
-              <span>{t.header.logout}</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => setLoginOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-foreground text-background hover:opacity-90 transition px-3 sm:px-4 py-2 text-xs font-semibold"
-            >
-              <Lock className="size-3.5" />
-              <span className="hidden sm:inline">{t.header.adminLogin}</span>
-            </button>
-          )}
-
-          {/* Employee selector — only when not admin (employees pick who they are) */}
-          {!isAdmin && (
-            <select
-              value={currentEmployeeId}
-              onChange={(e) => setCurrentEmployeeId(e.target.value)}
-              className="hidden md:block bg-surface border border-border rounded-full px-3 py-1.5 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-ring max-w-[160px]"
-            >
-              {employees.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.name}
-                </option>
-              ))}
-            </select>
-          )}
+          {/* Admin login and employee selection hidden for bypassed auth flow */}
 
           <div className="hidden lg:flex items-center gap-3 ps-3 border-s border-border">
             <div className="text-end">
@@ -313,24 +279,7 @@ function MobileDrawer({ onClose, onLogin }: { onClose: () => void; onLogin: () =
           </select>
         )}
         <div className="pt-3 border-t border-border">
-          {isAdmin ? (
-            <button
-              onClick={async () => {
-                await logout();
-                onClose();
-              }}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border text-xs font-bold uppercase tracking-widest hover:bg-urgent-soft hover:text-urgent"
-            >
-              <LogOut className="size-3.5" /> {t.header.logout}
-            </button>
-          ) : (
-            <button
-              onClick={onLogin}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest"
-            >
-              <Lock className="size-3.5" /> {t.header.adminLogin}
-            </button>
-          )}
+            {/* Auth buttons hidden in mobile drawer for bypassed flow */}
         </div>
       </nav>
     </div>

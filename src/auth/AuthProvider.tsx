@@ -91,19 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [navigate]);
 
-  // Global Navigation Guard
-  useEffect(() => {
-    if (isLoading) return;
-
-    const path = window.location.pathname;
-    const isPublic = path === "/" || path === "/login";
-
-    if (!user && !isPublic) {
-      navigate({ to: "/", replace: true });
-    } else if (user && isPublic) {
-      navigate({ to: "/dashboard", replace: true });
-    }
-  }, [user, isLoading, navigate]);
+  // Navigation guards removed for instant dashboard access
 
   const login = useCallback(async (email: string, pass: string) => {
     try {
@@ -135,21 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user, role, isAdmin, isLoading, login, logout],
   );
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background z-[9999]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative size-12">
-            <div className="absolute inset-0 rounded-full border-4 border-foreground/10" />
-            <div className="absolute inset-0 rounded-full border-4 border-foreground border-t-transparent animate-spin" />
-          </div>
-          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-foreground animate-pulse">
-            Hydrating...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Loading spinner removed for instant access
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

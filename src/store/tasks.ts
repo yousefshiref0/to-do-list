@@ -150,10 +150,6 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
     async function fetchData() {
       try {
-        const {
-          data: { user: currentUser },
-        } = await supabase.auth.getUser();
-
         if (!mounted) return;
 
         const [tasksRes, employeesRes, reportsRes] = await Promise.all([
@@ -161,6 +157,13 @@ export function TaskProvider({ children }: { children: ReactNode }) {
           supabase.from("employees").select("*"),
           supabase.from("reports").select("*").order("submitted_at", { ascending: false }),
         ]);
+
+        // Background auth check without blocking data render
+        supabase.auth.getUser().then(({ data: { user } }) => {
+          if (mounted && user) {
+             // Optional: handle user-specific state if needed
+          }
+        });
 
         if (!mounted) return;
 
