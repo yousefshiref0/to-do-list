@@ -51,14 +51,14 @@ export function Header() {
         {/* Left: brand + home */}
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <Link
-            to="/"
+            to="/dashboard"
             className="lg:hidden flex items-center gap-2 shrink-0"
             aria-label={t.header.home}
           >
             <Logo size={36} />
           </Link>
           <Link
-            to="/"
+            to="/dashboard"
             className="hidden sm:inline-flex items-center gap-2 rounded-full border border-border bg-surface hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground transition"
             title={t.header.home}
           >

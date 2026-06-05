@@ -21,9 +21,9 @@ export function Sidebar() {
   const { isAdmin } = useAuth();
 
   const items = [
-    { to: "/" as const, label: t.nav.home, icon: Home, adminOnly: false, employeeOnly: false },
+    { to: "/dashboard" as const, label: t.nav.home, icon: Home, adminOnly: false, employeeOnly: false },
     {
-      to: "/" as const,
+      to: "/dashboard" as const,
       label: t.nav.dashboard,
       icon: LayoutDashboard,
       adminOnly: false,
@@ -70,7 +70,7 @@ export function Sidebar() {
         </div>
         {items.map(({ to, label, icon: Icon }, idx) => {
           const active =
-            (to === "/" && pathname === "/") || (to !== "/" && pathname.startsWith(to));
+            (to === "/dashboard" && pathname === "/dashboard") || (to !== "/dashboard" && pathname.startsWith(to));
           return (
             <Link
               key={`${to}-${idx}`}
