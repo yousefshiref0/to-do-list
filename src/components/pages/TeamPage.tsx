@@ -3,8 +3,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { Plus, Trash2, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useI18n } from "@/i18n/I18nProvider";
-import { useStore } from "@/store/tasks";
+import { useStore, type Employee } from "@/store/tasks";
 import { useAuth } from "@/auth/AuthProvider";
+
+const API_URL = import.meta.env.VITE_API_URL ?? "https://backend-phi-gold-31.vercel.app";
 
 export function TeamPage() {
   const { t } = useI18n();
@@ -14,18 +16,52 @@ export function TeamPage() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
+  const [memberList, setMemberList] = useState<Employee[]>(employees);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAdmin) navigate({ to: "/" });
+    if (!isAdmin) {
+      navigate({ to: "/" });
+    }
   }, [isAdmin, navigate]);
+
+  useEffect(() => {
+    setMemberList(employees);
+  }, [employees]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    addEmployee({ name, role: role || "Operator" });
+
+    addEmployee({ name: name.trim(), role: role.trim() || "Operator" });
     setName("");
     setRole("");
     setOpen(false);
+  };
+
+  const handleRemove = async (id: string | undefined) => {
+    if (!id) return;
+    if (!confirm(t.team.confirmRemove)) return;
+
+    setDeletingId(id);
+    try {
+      const response = await fetch(`${API_URL}/employees/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.error || "Failed to remove member");
+      }
+
+      setMemberList((current) => current.filter((member) => member.id !== id));
+      removeEmployee(id);
+    } catch (error) {
+      console.error("Failed to remove team member:", error);
+      alert(t.team.remove || "Unable to remove member.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -50,29 +86,26 @@ export function TeamPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {employees.map((e) => {
-<<<<<<< HEAD
-            const assigned = tasks.filter((x) => x.assigneeId === e.id || x.assigneeId === "all").length;
-            const done = tasks.filter((x) => (x.assigneeId === e.id || x.assigneeId === "all") && x.status === "completed")
-              .length;
-=======
+          {memberList.map((member) => {
             const assigned = tasks.filter(
-              (x) => x.assigneeId === e.id || x.assigneeId === "all",
+              (task) => task.assigneeId === member.id || task.assigneeId === "all",
             ).length;
             const done = tasks.filter(
-              (x) => (x.assigneeId === e.id || x.assigneeId === "all") && x.status === "completed",
+              (task) =>
+                (task.assigneeId === member.id || task.assigneeId === "all") &&
+                task.status === "completed",
             ).length;
->>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
+
             return (
               <div
-                key={e.id}
+                key={member.id}
                 className="bg-surface border border-border rounded-3xl p-6 shadow-soft relative"
               >
                 <button
-                  onClick={() => {
-                    if (confirm(t.team.confirmRemove)) removeEmployee(e.id);
-                  }}
-                  className="absolute top-4 end-4 inline-flex items-center gap-1.5 px-3 h-9 rounded-full bg-urgent-soft text-urgent border border-urgent/30 hover:bg-urgent hover:text-white transition text-[10px] font-bold uppercase tracking-widest"
+                  type="button"
+                  onClick={() => handleRemove(member.id)}
+                  disabled={!member.id || deletingId === member.id}
+                  className="absolute top-4 end-4 inline-flex items-center gap-1.5 px-3 h-9 rounded-full bg-urgent-soft text-urgent border border-urgent/30 hover:bg-urgent hover:text-white transition disabled:cursor-not-allowed disabled:opacity-60 text-[10px] font-bold uppercase tracking-widest"
                   aria-label={t.team.remove}
                 >
                   <Trash2 className="size-3.5" />
@@ -83,17 +116,18 @@ export function TeamPage() {
                   aria-hidden
                 >
                   <div className="size-full rounded-full bg-surface flex items-center justify-center text-foreground font-bold">
-                    {e.name
+                    {member.name
                       .split(" ")
-                      .map((s) => s[0])
+                      .filter(Boolean)
+                      .map((segment) => segment[0])
                       .slice(0, 2)
                       .join("")}
                   </div>
                 </div>
                 <div className="mt-4">
-                  <h3 className="font-semibold text-foreground">{e.name}</h3>
+                  <h3 className="font-semibold text-foreground">{member.name}</h3>
                   <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">
-                    {e.role}
+                    {member.role}
                   </p>
                 </div>
                 <div className="mt-5 grid grid-cols-2 gap-3 text-center">
@@ -106,8 +140,7 @@ export function TeamPage() {
                   <div className="bg-surface-muted rounded-xl p-3">
                     <div className="font-display font-bold text-xl text-stable">{done}</div>
                     <div className="text-[9px] uppercase tracking-widest text-muted-foreground">
-                      {t.team.done}
-                    </div>
+                      {t.team.done}</div>
                   </div>
                 </div>
               </div>
