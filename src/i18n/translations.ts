@@ -24,10 +24,11 @@ export const translations = {
     },
     auth: {
       title: "Admin Access",
-      subtitle: "Enter the admin password to manage the operations command.",
+      subtitle: "Enter the admin credentials to manage the operations command.",
+      email: "Email",
       password: "Password",
       enter: "Enter Admin",
-      wrong: "Incorrect password.",
+      wrong: "Incorrect email or password.",
       backEmployee: "Continue as Employee",
     },
     status: {
@@ -179,6 +180,7 @@ export const translations = {
       lang: "العربية",
       delete: "Delete",
       back: "Back",
+      loading: "Loading...",
     },
   },
   ar: {
@@ -204,10 +206,11 @@ export const translations = {
     },
     auth: {
       title: "دخول المدير",
-      subtitle: "أدخل كلمة مرور المدير لإدارة مركز العمليات.",
+      subtitle: "أدخل بيانات المدير لإدارة مركز العمليات.",
+      email: "البريد الإلكتروني",
       password: "كلمة المرور",
       enter: "دخول المدير",
-      wrong: "كلمة المرور غير صحيحة.",
+      wrong: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
       backEmployee: "المتابعة كموظف",
     },
     status: {
@@ -358,6 +361,7 @@ export const translations = {
       lang: "English",
       delete: "حذف",
       back: "رجوع",
+      loading: "جاري التحميل...",
     },
   },
 } as const;

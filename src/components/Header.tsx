@@ -41,7 +41,7 @@ export function Header() {
       setPwd("");
       setEmail("");
       setIsLoggingIn(false);
-      navigate({ to: "/" });
+      navigate({ to: "/dashboard" });
     }
   };
 

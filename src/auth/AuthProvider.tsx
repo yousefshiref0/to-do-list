@@ -9,6 +9,7 @@ import {
 } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import { useNavigate } from "@tanstack/react-router";
 
 export type Role = "admin" | "employee";
 
@@ -17,7 +18,7 @@ interface AuthState {
   role: Role;
   isAdmin: boolean;
   isLoading: boolean;
-  loginAdmin: (password: string) => boolean; // Keeping for signature compatibility
+  loginAdmin: (password: string) => boolean;
   login: (email: string, pass: string) => Promise<{ error: Error | null }>;
   logout: () => Promise<{ error: Error | null }>;
   setEmployeeMode: () => void;
@@ -39,6 +40,7 @@ const Ctx = createContext<AuthState>(INITIAL_AUTH);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const role: Role = useMemo(() => {
     if (!user) return "employee";
@@ -71,8 +73,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (mounted) {
-        setUser(session?.user ?? null);
+        const newUser = session?.user ?? null;
+        setUser(newUser);
         setIsLoading(false);
+
+        // Global redirect on successful login
+        if (_event === "SIGNED_IN" && newUser) {
+          navigate({ to: "/dashboard" });
+        }
       }
     });
 
@@ -80,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const loginAdmin = useCallback((_password: string) => {
     return false;

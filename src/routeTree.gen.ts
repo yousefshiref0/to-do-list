@@ -13,6 +13,7 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as SendRouteImport } from './routes/send'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as MyTasksRouteImport } from './routes/my-tasks'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -36,6 +37,11 @@ const MyTasksRoute = MyTasksRouteImport.update({
   path: '/my-tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChecklistRoute = ChecklistRouteImport.update({
   id: '/checklist',
   path: '/checklist',
@@ -50,6 +56,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checklist': typeof ChecklistRoute
+  '/dashboard': typeof DashboardRoute
   '/my-tasks': typeof MyTasksRoute
   '/reports': typeof ReportsRoute
   '/send': typeof SendRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checklist': typeof ChecklistRoute
+  '/dashboard': typeof DashboardRoute
   '/my-tasks': typeof MyTasksRoute
   '/reports': typeof ReportsRoute
   '/send': typeof SendRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checklist': typeof ChecklistRoute
+  '/dashboard': typeof DashboardRoute
   '/my-tasks': typeof MyTasksRoute
   '/reports': typeof ReportsRoute
   '/send': typeof SendRoute
@@ -74,13 +83,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checklist' | '/my-tasks' | '/reports' | '/send' | '/team'
+  fullPaths:
+    | '/'
+    | '/checklist'
+    | '/dashboard'
+    | '/my-tasks'
+    | '/reports'
+    | '/send'
+    | '/team'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checklist' | '/my-tasks' | '/reports' | '/send' | '/team'
+  to:
+    | '/'
+    | '/checklist'
+    | '/dashboard'
+    | '/my-tasks'
+    | '/reports'
+    | '/send'
+    | '/team'
   id:
     | '__root__'
     | '/'
     | '/checklist'
+    | '/dashboard'
     | '/my-tasks'
     | '/reports'
     | '/send'
@@ -90,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChecklistRoute: typeof ChecklistRoute
+  DashboardRoute: typeof DashboardRoute
   MyTasksRoute: typeof MyTasksRoute
   ReportsRoute: typeof ReportsRoute
   SendRoute: typeof SendRoute
@@ -126,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyTasksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checklist': {
       id: '/checklist'
       path: '/checklist'
@@ -146,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChecklistRoute: ChecklistRoute,
+  DashboardRoute: DashboardRoute,
   MyTasksRoute: MyTasksRoute,
   ReportsRoute: ReportsRoute,
   SendRoute: SendRoute,
