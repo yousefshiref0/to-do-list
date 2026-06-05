@@ -90,6 +90,15 @@ export function DashboardPage() {
                 {t.nav.checklist}
               </Link>
             )}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-2 self-start rounded-full border border-border bg-surface px-5 py-3 text-sm font-semibold shadow-soft hover:bg-accent transition"
+              >
+                <Lock className="size-4" />
+                Admin Dashboard
+              </Link>
+            )}
           </div>
         </div>
 

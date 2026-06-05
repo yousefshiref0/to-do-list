@@ -107,6 +107,15 @@ export function Header() {
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </button>
 
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-xs font-bold uppercase tracking-widest hover:opacity-90 shadow-elevated transition"
+            >
+              <Lock className="size-3.5" />
+              <span>Admin</span>
+            </Link>
+          )}
           {/* Admin login and employee selection hidden for bypassed auth flow */}
 
           <div className="hidden lg:flex items-center gap-3 ps-3 border-s border-border">
