@@ -41,6 +41,30 @@ app.get("/cors-debug", (req, res) => {
   });
 });
 
+// === Health check — tests DB connectivity ===
+app.get("/health", async (req, res) => {
+  const result = {
+    server: "ok",
+    database: "unknown",
+    prisma: "unknown",
+    env: {
+      DATABASE_URL: process.env.DATABASE_URL ? "set" : "MISSING",
+      DIRECT_URL: process.env.DIRECT_URL ? "set" : "MISSING",
+    },
+    error: null,
+  };
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    result.database = "connected";
+    result.prisma = "ok";
+  } catch (err) {
+    result.database = "failed";
+    result.prisma = "error";
+    result.error = err.message;
+  }
+  const status = result.database === "connected" ? 200 : 500;
+  res.status(status).json(result);
+});
 
 app.get("/", (_, res) => {
   res.json({ message: "🚀 Backend server is running successfully on Vercel!" });
@@ -69,7 +93,8 @@ app.get("/tasks", async (_, res) => {
 
     res.json(modifiedTasks);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch tasks" });
+    console.error("GET /tasks error:", error);
+    res.status(500).json({ error: "Failed to fetch tasks", details: error.message });
   }
 });
 
