@@ -51,9 +51,18 @@ export function TeamPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {employees.map((e) => {
+<<<<<<< HEAD
             const assigned = tasks.filter((x) => x.assigneeId === e.id || x.assigneeId === "all").length;
             const done = tasks.filter((x) => (x.assigneeId === e.id || x.assigneeId === "all") && x.status === "completed")
               .length;
+=======
+            const assigned = tasks.filter(
+              (x) => x.assigneeId === e.id || x.assigneeId === "all",
+            ).length;
+            const done = tasks.filter(
+              (x) => (x.assigneeId === e.id || x.assigneeId === "all") && x.status === "completed",
+            ).length;
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
             return (
               <div
                 key={e.id}

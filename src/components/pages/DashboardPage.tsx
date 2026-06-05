@@ -40,6 +40,7 @@ export function DashboardPage() {
   const pending = tasks.filter((x) => x.status !== "completed").length;
   const completed = tasks.filter((x) => x.status === "completed").length;
 
+<<<<<<< HEAD
  const teamProgress = employees.map((e) => {
   const mine = tasks.filter((t) => t.assigneeId === e.id || t.assigneeId === "all");
   
@@ -47,6 +48,15 @@ export function DashboardPage() {
   const pct = mine.length === 0 ? 0 : Math.round((done / mine.length) * 100);
   return { ...e, pct, total: mine.length, done };
 });
+=======
+  const teamProgress = employees.map((e) => {
+    const mine = tasks.filter((t) => t.assigneeId === e.id || t.assigneeId === "all");
+
+    const done = mine.filter((t) => t.status === "completed").length;
+    const pct = mine.length === 0 ? 0 : Math.round((done / mine.length) * 100);
+    return { ...e, pct, total: mine.length, done };
+  });
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
 
   return (
     <AppShell>

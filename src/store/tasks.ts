@@ -132,6 +132,7 @@ function genRef(): string {
 }
 
 export function TaskProvider({ children }: { children: ReactNode }) {
+<<<<<<< HEAD
 const API_URL = "https://backend-phi-gold-31.vercel.app";
 
 const [state, setState] = useState<Persisted>({
@@ -140,15 +141,55 @@ const [state, setState] = useState<Persisted>({
   reports: [],
   currentEmployeeId: "e1",
 });
+=======
+  const [state, setState] = useState<Persisted>({
+    tasks: [],
+    employees: [
+      { id: "e1", name: "Ahmed", role: "Driver", avatarSeed: 1 },
+      { id: "e2", name: "Mohamed", role: "Dispatcher", avatarSeed: 2 },
+    ],
+    reports: [],
+    currentEmployeeId: "e1",
+  });
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data: tasks, error: tErr } = await supabase.auth.getSession().then(() => 
+          supabase.from("tasks").select("*").order("createdAt", { ascending: false })
+        );
+        const { data: employees, error: eErr } = await supabase.from("employees").select("*");
+        const { data: reports, error: rErr } = await supabase.from("reports").select("*").order("submittedAt", { ascending: false });
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
 
 useEffect(() => {
   async function fetchData() {
     try {
+<<<<<<< HEAD
       const [tasksRes, employeesRes, reportsRes] = await Promise.all([
         fetch(`${API_URL}/tasks`),
         fetch(`${API_URL}/employees`),
         fetch(`${API_URL}/reports`),
       ]);
+=======
+      const ref = genRef();
+      const { data, error } = await supabase
+        .from("tasks")
+        .insert([
+          {
+            title: t.title,
+            description: t.description,
+            priority: t.priority,
+            dueDate: t.dueDate,
+            assigneeId: t.assigneeId,
+            ref,
+            status: "pending",
+            createdBy: "Admin",
+          },
+        ])
+        .select()
+        .single();
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
 
       if (!tasksRes.ok || !employeesRes.ok || !reportsRes.ok) {
         throw new Error("حدث خطأ في جلب البيانات من السيرفر");
@@ -232,6 +273,7 @@ const updateTaskStatus: Store["updateTaskStatus"] = useCallback(
   }));
 }, []);
 
+<<<<<<< HEAD
 const addEmployee: Store["addEmployee"] = useCallback(async (e) => {
   const response = await fetch(`${API_URL}/employees`, {
     method: "POST",
@@ -243,6 +285,19 @@ const addEmployee: Store["addEmployee"] = useCallback(async (e) => {
       avatarSeed: Math.floor(Math.random() * 100),
     }),
   });
+=======
+  const addEmployee: Store["addEmployee"] = useCallback(async (e) => {
+    const { data, error } = await supabase
+      .from("employees")
+      .insert([
+        {
+          ...e,
+          avatarSeed: Math.floor(Math.random() * 100),
+        },
+      ])
+      .select()
+      .single();
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
 
   const newEmployee = await response.json();
 
@@ -297,11 +352,55 @@ const deleteReport: Store["deleteReport"] = useCallback(async (id) => {
     method: "DELETE",
   });
 
+<<<<<<< HEAD
   setState((s) => ({
     ...s,
     reports: s.reports.filter((r) => r.id !== id),
   }));
 }, []);
+=======
+    setState((s) => ({
+      ...s,
+      employees: s.employees.filter((e) => e.id !== id),
+    }));
+  }, []);
+
+  const addReport: Store["addReport"] = useCallback(async (r) => {
+    try {
+      const { data, error } = await supabase
+        .from("reports")
+        .insert([
+          {
+            ...r,
+            submittedAt: new Date().toISOString(),
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setState((s) => ({
+        ...s,
+        reports: [data, ...s.reports],
+      }));
+
+      alert("تم إرسال التقرير بنجاح!");
+    } catch (error) {
+      console.error("Error adding report:", error);
+      alert("فشل إرسال التقرير، راجعي الكونسول.");
+    }
+  }, []);
+
+  const deleteReport: Store["deleteReport"] = useCallback(async (id) => {
+    await supabase.from("reports").delete().eq("id", id);
+
+    setState((s) => ({
+      ...s,
+      reports: s.reports.filter((r) => r.id !== id),
+    }));
+  }, []);
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
 
   const setCurrentEmployeeId: Store["setCurrentEmployeeId"] = useCallback(
     (currentEmployeeId) => setState((s) => ({ ...s, currentEmployeeId })),

@@ -13,8 +13,13 @@ export function MyTasksPage() {
   const fmt = useFormatters();
 
   const me = employees.find((e) => e.id === currentEmployeeId);
+<<<<<<< HEAD
   const myTasks = isAdmin 
     ? tasks 
+=======
+  const myTasks = isAdmin
+    ? tasks
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
     : tasks.filter((x) => x.assigneeId === currentEmployeeId || x.assigneeId === "all");
 
   return (

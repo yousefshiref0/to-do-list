@@ -54,7 +54,13 @@ export function ReportsPage() {
                       </h3>
                       <p className="text-sm text-muted-foreground mt-1.5">
                         {t.checklist.submittedBy}{" "}
+<<<<<<< HEAD
                         <span className="text-foreground font-semibold">{nameFor(r.submittedById)}</span>{" "}
+=======
+                        <span className="text-foreground font-semibold">
+                          {nameFor(r.submittedById)}
+                        </span>{" "}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
                         · {fmt.datetime(r.submittedAt)}
                       </p>
                     </div>
@@ -71,7 +77,14 @@ export function ReportsPage() {
                   <div className="grid grid-cols-3 gap-2 mt-4 text-center">
                     <Mini label={t.checklist.productQuality} value={r.productQuality} />
                     <Mini label={t.checklist.caliper} value={r.caliper} />
+<<<<<<< HEAD
                     <Mini label={t.checklist.temperature} value={r.temperatureC ? `${r.temperatureC}°C` : "—"} />
+=======
+                    <Mini
+                      label={t.checklist.temperature}
+                      value={r.temperatureC ? `${r.temperatureC}°C` : "—"}
+                    />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
                   </div>
                   <button
                     onClick={() => setOpen(r)}
@@ -152,7 +165,12 @@ function ReportModal({
                 MODERN ENTERPRISE — Loading & Quality Check List
               </h1>
               <p className="text-xs text-muted-foreground mt-1">
+<<<<<<< HEAD
                 {t.checklist.submittedBy}: <strong>{nameFor(r.submittedById)}</strong> · {fmt.datetime(r.submittedAt)}
+=======
+                {t.checklist.submittedBy}: <strong>{nameFor(r.submittedById)}</strong> ·{" "}
+                {fmt.datetime(r.submittedAt)}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               </p>
             </div>
           </header>
@@ -173,22 +191,51 @@ function ReportModal({
 
           <Section title={t.checklist.productInspection}>
             <Row label={t.checklist.productQuality} value={r.productQuality} />
+<<<<<<< HEAD
             <Row label={`${t.checklist.productQuality} ${t.checklist.notes}`} value={r.productQualityNotes} />
+=======
+            <Row
+              label={`${t.checklist.productQuality} ${t.checklist.notes}`}
+              value={r.productQualityNotes}
+            />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
             <Row label={t.checklist.caliper} value={r.caliper} />
             <Row label={`${t.checklist.caliper} ${t.checklist.notes}`} value={r.caliperNotes} />
             <Row label={t.checklist.washing} value={r.washing} />
             <Row label={`${t.checklist.washing} ${t.checklist.notes}`} value={r.washingNotes} />
             <Row label={t.checklist.packingMaterial} value={r.packingMaterial} />
+<<<<<<< HEAD
             <Row label={`${t.checklist.packingMaterial} ${t.checklist.notes}`} value={r.packingMaterialNotes} />
             <Row label={t.checklist.temperatureTreatment} value={r.temperatureTreatment} />
             <Row label={t.checklist.temperature} value={r.temperatureC ? `${r.temperatureC}°C` : "—"} />
             <Row label={`${t.checklist.temperatureTreatment} ${t.checklist.notes}`} value={r.temperatureNotes} />
             <Row label={t.checklist.packingWeightSize} value={r.packingWeightSize} />
             <Row label={`${t.checklist.packingWeightSize} ${t.checklist.notes}`} value={r.packingWeightSizeNotes} />
+=======
+            <Row
+              label={`${t.checklist.packingMaterial} ${t.checklist.notes}`}
+              value={r.packingMaterialNotes}
+            />
+            <Row label={t.checklist.temperatureTreatment} value={r.temperatureTreatment} />
+            <Row
+              label={t.checklist.temperature}
+              value={r.temperatureC ? `${r.temperatureC}°C` : "—"}
+            />
+            <Row
+              label={`${t.checklist.temperatureTreatment} ${t.checklist.notes}`}
+              value={r.temperatureNotes}
+            />
+            <Row label={t.checklist.packingWeightSize} value={r.packingWeightSize} />
+            <Row
+              label={`${t.checklist.packingWeightSize} ${t.checklist.notes}`}
+              value={r.packingWeightSizeNotes}
+            />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
           </Section>
 
           <Section title={t.checklist.palletsInspection}>
             <Row label={t.checklist.palletsCheck} value={r.palletsCheck?.replace("_", " ")} />
+<<<<<<< HEAD
             <Row label={`${t.checklist.palletsCheck} ${t.checklist.notes}`} value={r.palletsCheckNotes} />
             <Row label={t.checklist.palletsCondition} value={r.palletsConditionType} />
             <Row label={`${t.checklist.palletsCondition} (${t.checklist.strong})`} value={r.palletsConditionStrength} />
@@ -196,6 +243,30 @@ function ReportModal({
             <Row label={`${t.checklist.palletsPrepared} — ${t.checklist.weight}`} value={r.palletsPreparedWeight ? `${r.palletsPreparedWeight} kg` : "—"} />
             <Row label={t.checklist.wrapping} value={r.palletsPreparedWrapping} />
             <Row label={`${t.checklist.palletsPrepared} ${t.checklist.notes}`} value={r.palletsPreparedNotes} />
+=======
+            <Row
+              label={`${t.checklist.palletsCheck} ${t.checklist.notes}`}
+              value={r.palletsCheckNotes}
+            />
+            <Row label={t.checklist.palletsCondition} value={r.palletsConditionType} />
+            <Row
+              label={`${t.checklist.palletsCondition} (${t.checklist.strong})`}
+              value={r.palletsConditionStrength}
+            />
+            <Row
+              label={`${t.checklist.palletsCondition} ${t.checklist.notes}`}
+              value={r.palletsConditionNotes}
+            />
+            <Row
+              label={`${t.checklist.palletsPrepared} — ${t.checklist.weight}`}
+              value={r.palletsPreparedWeight ? `${r.palletsPreparedWeight} kg` : "—"}
+            />
+            <Row label={t.checklist.wrapping} value={r.palletsPreparedWrapping} />
+            <Row
+              label={`${t.checklist.palletsPrepared} ${t.checklist.notes}`}
+              value={r.palletsPreparedNotes}
+            />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
             <Row label={t.checklist.fitting} value={r.fitting?.replace("_", " ")} />
             <Row label={`${t.checklist.fitting} ${t.checklist.notes}`} value={r.fittingNotes} />
           </Section>
@@ -205,7 +276,14 @@ function ReportModal({
             <Row label={t.checklist.startAt} value={r.loadingStart} />
             <Row label={t.checklist.endAt} value={r.loadingEnd} />
             <Row label={t.checklist.containerWashed} value={r.containerWashed} />
+<<<<<<< HEAD
             <Row label={`${t.checklist.containerWashed} ${t.checklist.notes}`} value={r.containerWashedNotes} />
+=======
+            <Row
+              label={`${t.checklist.containerWashed} ${t.checklist.notes}`}
+              value={r.containerWashedNotes}
+            />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
             <Row label={t.checklist.testingTempCondition} value={r.testingTempCondition} />
             <Row label={t.checklist.finalLoadingDetails} value={r.finalLoadingDetails} />
           </Section>

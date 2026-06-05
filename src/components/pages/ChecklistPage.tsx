@@ -62,7 +62,11 @@ export function ChecklistPage() {
 
   useEffect(() => {
     if (currentEmployeeId) {
+<<<<<<< HEAD
       setForm(s => ({ ...s, submittedById: currentEmployeeId }));
+=======
+      setForm((s) => ({ ...s, submittedById: currentEmployeeId }));
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
     }
   }, [currentEmployeeId]);
 
@@ -135,19 +139,61 @@ const submit = (e: FormEvent) => {
           {/* Job Information */}
           <Section title={t.checklist.jobInfo}>
             <Grid>
+<<<<<<< HEAD
               <Text label={t.checklist.jobNumber} value={form.jobNumber} onChange={(v) => set("jobNumber", v)} required />
               <DateInput label={t.checklist.date} value={form.date} onChange={(v) => set("date", v)} />
               <Text label={t.checklist.supervisor} value={form.supervisor} onChange={(v) => set("supervisor", v)} />
               <TimeInput label={t.checklist.arrivalTime} value={form.arrivalTime} onChange={(v) => set("arrivalTime", v)} />
               <TimeInput label={t.checklist.departureTime} value={form.departureTime} onChange={(v) => set("departureTime", v)} />
+=======
+              <Text
+                label={t.checklist.jobNumber}
+                value={form.jobNumber}
+                onChange={(v) => set("jobNumber", v)}
+                required
+              />
+              <DateInput
+                label={t.checklist.date}
+                value={form.date}
+                onChange={(v) => set("date", v)}
+              />
+              <Text
+                label={t.checklist.supervisor}
+                value={form.supervisor}
+                onChange={(v) => set("supervisor", v)}
+              />
+              <TimeInput
+                label={t.checklist.arrivalTime}
+                value={form.arrivalTime}
+                onChange={(v) => set("arrivalTime", v)}
+              />
+              <TimeInput
+                label={t.checklist.departureTime}
+                value={form.departureTime}
+                onChange={(v) => set("departureTime", v)}
+              />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
             </Grid>
           </Section>
 
           {/* Station Details */}
           <Section title={t.checklist.stationDetails}>
             <Grid>
+<<<<<<< HEAD
               <Text label={t.checklist.stationName} value={form.stationName} onChange={(v) => set("stationName", v)} />
               <Text label={t.checklist.stationManager} value={form.stationManager} onChange={(v) => set("stationManager", v)} />
+=======
+              <Text
+                label={t.checklist.stationName}
+                value={form.stationName}
+                onChange={(v) => set("stationName", v)}
+              />
+              <Text
+                label={t.checklist.stationManager}
+                value={form.stationManager}
+                onChange={(v) => set("stationManager", v)}
+              />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
             </Grid>
             <Field label={t.checklist.orderSummary}>
               <textarea
@@ -163,7 +209,15 @@ const submit = (e: FormEvent) => {
           <Section title={t.checklist.productInspection}>
             <Rating
               label={t.checklist.productQuality}
+<<<<<<< HEAD
               options={[["fair", t.checklist.fair], ["good", t.checklist.good], ["excellent", t.checklist.excellent]]}
+=======
+              options={[
+                ["fair", t.checklist.fair],
+                ["good", t.checklist.good],
+                ["excellent", t.checklist.excellent],
+              ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               value={form.productQuality}
               onChange={(v) => set("productQuality", v as Rating3)}
               notes={form.productQualityNotes}
@@ -190,7 +244,15 @@ const submit = (e: FormEvent) => {
             />
             <Rating
               label={t.checklist.packingMaterial}
+<<<<<<< HEAD
               options={[["fair", t.checklist.fair], ["good", t.checklist.good], ["excellent", t.checklist.excellent]]}
+=======
+              options={[
+                ["fair", t.checklist.fair],
+                ["good", t.checklist.good],
+                ["excellent", t.checklist.excellent],
+              ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               value={form.packingMaterial}
               onChange={(v) => set("packingMaterial", v as Rating3)}
               notes={form.packingMaterialNotes}
@@ -203,7 +265,15 @@ const submit = (e: FormEvent) => {
                   <Thermometer className="size-4 text-urgent" /> {t.checklist.temperatureTreatment}
                 </span>
               }
+<<<<<<< HEAD
               options={[["fair", t.checklist.fair], ["good", t.checklist.good], ["excellent", t.checklist.excellent]]}
+=======
+              options={[
+                ["fair", t.checklist.fair],
+                ["good", t.checklist.good],
+                ["excellent", t.checklist.excellent],
+              ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               value={form.temperatureTreatment}
               onChange={(v) => set("temperatureTreatment", v as Rating3)}
               notes={form.temperatureNotes}
@@ -225,7 +295,15 @@ const submit = (e: FormEvent) => {
             />
             <Rating
               label={t.checklist.packingWeightSize}
+<<<<<<< HEAD
               options={[["fair", t.checklist.fair], ["good", t.checklist.good], ["excellent", t.checklist.excellent]]}
+=======
+              options={[
+                ["fair", t.checklist.fair],
+                ["good", t.checklist.good],
+                ["excellent", t.checklist.excellent],
+              ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               value={form.packingWeightSize}
               onChange={(v) => set("packingWeightSize", v as Rating3)}
               notes={form.packingWeightSizeNotes}
@@ -238,7 +316,14 @@ const submit = (e: FormEvent) => {
           <Section title={t.checklist.palletsInspection}>
             <Rating
               label={t.checklist.palletsCheck}
+<<<<<<< HEAD
               options={[["stamped", t.checklist.stamped], ["not_stamped", t.checklist.notStamped]]}
+=======
+              options={[
+                ["stamped", t.checklist.stamped],
+                ["not_stamped", t.checklist.notStamped],
+              ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               value={form.palletsCheck}
               onChange={(v) => set("palletsCheck", v as StampedT)}
               notes={form.palletsCheckNotes}
@@ -249,14 +334,29 @@ const submit = (e: FormEvent) => {
             <div className="space-y-3">
               <Rating
                 label={t.checklist.palletsCondition}
+<<<<<<< HEAD
                 options={[["new", t.checklist.new], ["used", t.checklist.used]]}
+=======
+                options={[
+                  ["new", t.checklist.new],
+                  ["used", t.checklist.used],
+                ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
                 value={form.palletsConditionType}
                 onChange={(v) => set("palletsConditionType", v as PalletNew)}
                 notesLabel={t.checklist.notes}
               />
               <Rating
                 label={`${t.checklist.palletsCondition} — ${t.checklist.fair}/${t.checklist.strong}/${t.checklist.excellent}`}
+<<<<<<< HEAD
                 options={[["fair", t.checklist.fair], ["strong", t.checklist.strong], ["excellent", t.checklist.excellent]]}
+=======
+                options={[
+                  ["fair", t.checklist.fair],
+                  ["strong", t.checklist.strong],
+                  ["excellent", t.checklist.excellent],
+                ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
                 value={form.palletsConditionStrength}
                 onChange={(v) => set("palletsConditionStrength", v as PalletStrength)}
                 notes={form.palletsConditionNotes}
@@ -280,7 +380,14 @@ const submit = (e: FormEvent) => {
                   <Choice
                     value={form.palletsPreparedWrapping}
                     onChange={(v) => set("palletsPreparedWrapping", v as YesNo)}
+<<<<<<< HEAD
                     options={[["yes", t.checklist.yes], ["no", t.checklist.no]]}
+=======
+                    options={[
+                      ["yes", t.checklist.yes],
+                      ["no", t.checklist.no],
+                    ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
                   />
                 </Field>
               </Grid>
@@ -320,13 +427,33 @@ const submit = (e: FormEvent) => {
                 {t.checklist.loadingTime}
               </p>
               <Grid>
+<<<<<<< HEAD
                 <TimeInput label={t.checklist.startAt} value={form.loadingStart} onChange={(v) => set("loadingStart", v)} />
                 <TimeInput label={t.checklist.endAt} value={form.loadingEnd} onChange={(v) => set("loadingEnd", v)} />
+=======
+                <TimeInput
+                  label={t.checklist.startAt}
+                  value={form.loadingStart}
+                  onChange={(v) => set("loadingStart", v)}
+                />
+                <TimeInput
+                  label={t.checklist.endAt}
+                  value={form.loadingEnd}
+                  onChange={(v) => set("loadingEnd", v)}
+                />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               </Grid>
             </div>
             <Rating
               label={t.checklist.containerWashed}
+<<<<<<< HEAD
               options={[["yes", t.checklist.yes], ["no", t.checklist.no]]}
+=======
+              options={[
+                ["yes", t.checklist.yes],
+                ["no", t.checklist.no],
+              ]}
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
               value={form.containerWashed}
               onChange={(v) => set("containerWashed", v as YesNo)}
               notes={form.containerWashedNotes}
@@ -354,8 +481,22 @@ const submit = (e: FormEvent) => {
           {/* Signature */}
           <Section title={t.checklist.signature}>
             <Grid>
+<<<<<<< HEAD
               <Text label={t.checklist.inspectorName} value={form.inspectorName} onChange={(v) => set("inspectorName", v)} required />
               <Text label={t.checklist.signatureField} value={form.signature} onChange={(v) => set("signature", v)} />
+=======
+              <Text
+                label={t.checklist.inspectorName}
+                value={form.inspectorName}
+                onChange={(v) => set("inspectorName", v)}
+                required
+              />
+              <Text
+                label={t.checklist.signatureField}
+                value={form.signature}
+                onChange={(v) => set("signature", v)}
+              />
+>>>>>>> parent of 4d2b7c9 (Align Supabase schema with snake_case and fix 400 Bad Request errors)
             </Grid>
           </Section>
 
