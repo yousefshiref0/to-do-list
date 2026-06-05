@@ -31,7 +31,7 @@ export function Header() {
     setIsLoggingIn(true);
     setErr("");
     
-    const { error } = await login(email, pwd);
+    const { error, user: loggedInUser } = await login(email, pwd);
     
     if (error) {
       setErr(t.auth.wrong || "خطأ في تسجيل الدخول");
@@ -41,7 +41,17 @@ export function Header() {
       setPwd("");
       setEmail("");
       setIsLoggingIn(false);
-      // Removed manual navigate({ to: "/dashboard" }) as it's handled globally by AuthProvider
+
+      const userRole = loggedInUser?.user_metadata?.role;
+      console.log("[Header] Login success — role:", userRole ?? "employee");
+
+      if (userRole === "admin") {
+        console.log("[Header] Admin detected — redirecting to /admin");
+        navigate({ to: "/admin", replace: true });
+      } else {
+        console.log("[Header] Employee detected — redirecting to /dashboard");
+        navigate({ to: "/dashboard", replace: true });
+      }
     }
   };
 

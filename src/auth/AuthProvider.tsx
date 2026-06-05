@@ -18,7 +18,7 @@ interface AuthState {
   role: Role;
   isAdmin: boolean;
   isLoading: boolean;
-  login: (email: string, pass: string) => Promise<{ error: Error | null }>;
+  login: (email: string, pass: string) => Promise<{ error: Error | null; user: User | null }>;
   logout: () => Promise<{ error: Error | null }>;
 }
 
@@ -27,7 +27,7 @@ const INITIAL_AUTH: AuthState = {
   role: "employee",
   isAdmin: false,
   isLoading: true,
-  login: async () => ({ error: null }),
+  login: async () => ({ error: null, user: null }),
   logout: async () => ({ error: null }),
 };
 
@@ -76,10 +76,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
 
         if (_event === "SIGNED_IN" && newUser) {
-          navigate({ to: "/dashboard", replace: true });
+          console.log("[Auth] SIGNED_IN event — role:", newUser.user_metadata?.role ?? "employee");
+          // Navigation is handled by the login caller (Header), not here,
+          // so admin logins can redirect to /admin.
         }
 
         if (_event === "SIGNED_OUT") {
+          console.log("[Auth] SIGNED_OUT event — redirecting to /");
           navigate({ to: "/", replace: true });
         }
       }
@@ -95,10 +98,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, pass: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
-      return { error: error as Error | null };
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+      if (error) {
+        console.error("[Auth] Login failed:", error.message);
+        return { error: error as Error, user: null };
+      }
+      const loggedInUser = data.user;
+      console.log("[Auth] Login success — user:", loggedInUser?.email, "role:", loggedInUser?.user_metadata?.role ?? "employee");
+      return { error: null, user: loggedInUser };
     } catch (error) {
-      return { error: error as Error };
+      console.error("[Auth] Login exception:", error);
+      return { error: error as Error, user: null };
     }
   }, []);
 
