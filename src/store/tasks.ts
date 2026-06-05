@@ -240,16 +240,33 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const removeEmployee: Store["removeEmployee"] = useCallback(async (id) => {
     if (!id) return;
 
-    const response = await fetch(`${API_URL}/employees/${id}`, {
-      method: "DELETE",
-    });
+    // Store the previous state for rollback if needed
+    const previousEmployees = state.employees;
 
-    if (!response.ok) {
-      throw new Error("Failed to delete employee");
+    try {
+      // Optimistic update: remove from UI immediately
+      setState((s) => ({
+        ...s,
+        employees: s.employees.filter((e) => e.id !== id),
+      }));
+
+      // Then delete from backend
+      const response = await fetch(`${API_URL}/employees/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        // Rollback on failure
+        setState((s) => ({ ...s, employees: previousEmployees }));
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.error || "Failed to delete employee");
+      }
+    } catch (error) {
+      // Ensure we roll back on error
+      setState((s) => ({ ...s, employees: previousEmployees }));
+      throw error;
     }
-
-    setState((s) => ({ ...s, employees: s.employees.filter((e) => e.id !== id) }));
-  }, []);
+  }, [state.employees]);
 
   const addReport: Store["addReport"] = useCallback(async (r) => {
     try {

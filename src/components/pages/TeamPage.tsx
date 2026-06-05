@@ -16,18 +16,14 @@ export function TeamPage() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
-  const [memberList, setMemberList] = useState<Employee[]>(employees);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAdmin) {
       navigate({ to: "/" });
     }
   }, [isAdmin, navigate]);
-
-  useEffect(() => {
-    setMemberList(employees);
-  }, [employees]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -39,26 +35,23 @@ export function TeamPage() {
     setOpen(false);
   };
 
-  const handleRemove = async (id: string | undefined) => {
-    if (!id) return;
+  const handleRemove = async (employeeId: string | undefined) => {
+    if (!employeeId) return;
+    
+    // Show confirmation dialog
     if (!confirm(t.team.confirmRemove)) return;
 
-    setDeletingId(id);
+    setDeletingId(employeeId);
+    setError(null);
+    
     try {
-      const response = await fetch(`${API_URL}/employees/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(errorBody?.error || "Failed to remove member");
-      }
-
-      setMemberList((current) => current.filter((member) => member.id !== id));
-      removeEmployee(id);
-    } catch (error) {
-      console.error("Failed to remove team member:", error);
-      alert(t.team.remove || "Unable to remove member.");
+      // Store handles everything: API call + state update
+      await removeEmployee(employeeId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unable to remove member";
+      console.error("Failed to remove team member:", err);
+      setError(errorMessage);
+      alert(errorMessage);
     } finally {
       setDeletingId(null);
     }
@@ -86,7 +79,12 @@ export function TeamPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {memberList.map((member) => {
+          {error && (
+            <div className="col-span-full bg-urgent-soft border border-urgent text-urgent rounded-2xl p-4 text-sm">
+              {error}
+            </div>
+          )}
+          {employees.map((member) => {
             const assigned = tasks.filter(
               (task) => task.assigneeId === member.id || task.assigneeId === "all",
             ).length;
