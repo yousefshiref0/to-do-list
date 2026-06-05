@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 export function SendPage() {
   const { t } = useI18n();
   const { employees, addTask } = useStore();
-  const { isAdmin, isLoading } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -20,11 +20,6 @@ export function SendPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    if (!isLoading && !isAdmin) {
-      navigate({ to: "/" });
-    }
-  }, [isAdmin, isLoading, navigate]);
 
   if (isLoading) {
     return (

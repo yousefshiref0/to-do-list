@@ -29,6 +29,7 @@ export function DashboardPage() {
     return () => clearInterval(id);
   }, []);
 
+
   const visibleTasks = useMemo(() => {
     const base = isAdmin
       ? tasks

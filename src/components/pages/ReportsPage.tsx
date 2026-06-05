@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ClipboardList, Printer, Trash2, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -9,9 +9,10 @@ import { useAuth } from "@/auth/AuthProvider";
 export function ReportsPage() {
   const { t } = useI18n();
   const { reports, employees, deleteReport } = useStore();
-  const { isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const fmt = useFormatters();
   const [open, setOpen] = useState<InspectionReport | null>(null);
+
 
   if (isLoading) {
     return (

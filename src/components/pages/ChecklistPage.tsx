@@ -54,7 +54,7 @@ const empty: FormState = {
 export function ChecklistPage() {
   const { t } = useI18n();
   const { addReport, currentEmployeeId, employees } = useStore();
-  const { isAdmin, isLoading } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({ ...empty, submitted_by_id: currentEmployeeId });
   const [error, setError] = useState("");
@@ -66,11 +66,6 @@ export function ChecklistPage() {
     }
   }, [currentEmployeeId]);
 
-  useEffect(() => {
-    if (!isLoading && isAdmin) {
-      navigate({ to: "/reports" });
-    }
-  }, [isAdmin, isLoading, navigate]);
 
   if (isLoading) {
     return (

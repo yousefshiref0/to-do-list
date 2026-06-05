@@ -18,10 +18,8 @@ interface AuthState {
   role: Role;
   isAdmin: boolean;
   isLoading: boolean;
-  loginAdmin: (password: string) => boolean;
   login: (email: string, pass: string) => Promise<{ error: Error | null }>;
   logout: () => Promise<{ error: Error | null }>;
-  setEmployeeMode: () => void;
 }
 
 const INITIAL_AUTH: AuthState = {
@@ -29,10 +27,8 @@ const INITIAL_AUTH: AuthState = {
   role: "employee",
   isAdmin: false,
   isLoading: true,
-  loginAdmin: () => false,
   login: async () => ({ error: null }),
   logout: async () => ({ error: null }),
-  setEmployeeMode: () => {},
 };
 
 const Ctx = createContext<AuthState>(INITIAL_AUTH);
@@ -54,9 +50,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function initAuth() {
       try {
-        const { data } = await supabase.auth.getUser();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (mounted) {
-          setUser(data.user);
+          const newUser = session?.user ?? null;
+          setUser(newUser);
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
@@ -77,9 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(newUser);
         setIsLoading(false);
 
-        // Global redirect on successful login
         if (_event === "SIGNED_IN" && newUser) {
-          navigate({ to: "/dashboard" });
+          navigate({ to: "/dashboard", replace: true });
+        }
+
+        if (_event === "SIGNED_OUT") {
+          navigate({ to: "/", replace: true });
         }
       }
     });
@@ -90,9 +92,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [navigate]);
 
-  const loginAdmin = useCallback((_password: string) => {
-    return false;
-  }, []);
+  // Global Navigation Guard
+  useEffect(() => {
+    if (isLoading) return;
+
+    const path = window.location.pathname;
+    const isPublic = path === "/" || path === "/login";
+
+    if (!user && !isPublic) {
+      navigate({ to: "/", replace: true });
+    } else if (user && isPublic) {
+      navigate({ to: "/dashboard", replace: true });
+    }
+  }, [user, isLoading, navigate]);
 
   const login = useCallback(async (email: string, pass: string) => {
     try {
@@ -112,20 +124,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setEmployeeMode = useCallback(() => {}, []);
-
   const value = useMemo<AuthState>(
     () => ({
       user,
       role,
       isAdmin,
       isLoading,
-      loginAdmin,
       login,
       logout,
-      setEmployeeMode,
     }),
-    [user, role, isAdmin, isLoading, loginAdmin, login, logout, setEmployeeMode],
+    [user, role, isAdmin, isLoading, login, logout],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

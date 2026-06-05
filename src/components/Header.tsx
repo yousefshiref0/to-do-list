@@ -41,7 +41,7 @@ export function Header() {
       setPwd("");
       setEmail("");
       setIsLoggingIn(false);
-      navigate({ to: "/dashboard" });
+      // Removed manual navigate({ to: "/dashboard" }) as it's handled globally by AuthProvider
     }
   };
 
@@ -111,7 +111,7 @@ export function Header() {
             <button
               onClick={async () => {
                 await logout();
-                navigate({ to: "/" });
+                // Removed manual navigate({ to: "/" }) as it's handled globally by AuthProvider
               }}
               className="hidden sm:inline-flex items-center gap-2 rounded-full border border-border bg-surface hover:bg-urgent-soft hover:text-urgent transition px-3 py-2 text-xs font-semibold text-foreground"
             >

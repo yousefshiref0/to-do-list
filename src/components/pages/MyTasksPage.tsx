@@ -1,5 +1,7 @@
 import { CheckCircle2, Eye, RotateCcw } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useStore } from "@/store/tasks";
 import { PriorityBadge, PriorityDot, StatusBadge } from "@/components/Badges";
@@ -8,9 +10,10 @@ import { useAuth } from "@/auth/AuthProvider";
 
 export function MyTasksPage() {
   const { t } = useI18n();
-  const { tasks, employees, currentEmployeeId, updateTaskStatus } = useStore();
-  const { isAdmin, isLoading } = useAuth();
+  const { tasks = [], employees = [], currentEmployeeId, updateTaskStatus } = useStore();
+  const { user, isAdmin, isLoading } = useAuth();
   const fmt = useFormatters();
+
 
   if (isLoading) {
     return (

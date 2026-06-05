@@ -1,5 +1,4 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { Plus, Trash2, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -9,17 +8,11 @@ import { useAuth } from "@/auth/AuthProvider";
 export function TeamPage() {
   const { t } = useI18n();
   const { employees, tasks, addEmployee, removeEmployee } = useStore();
-  const { isAdmin, isLoading } = useAuth();
-  const navigate = useNavigate();
+  const { user, isAdmin, isLoading } = useAuth();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
 
-  useEffect(() => {
-    if (!isLoading && !isAdmin) {
-      navigate({ to: "/" });
-    }
-  }, [isAdmin, isLoading, navigate]);
 
   if (isLoading) {
     return (
