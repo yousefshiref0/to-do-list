@@ -9,15 +9,25 @@ import { useAuth } from "@/auth/AuthProvider";
 export function TeamPage() {
   const { t } = useI18n();
   const { employees, tasks, addEmployee, removeEmployee } = useStore();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
 
   useEffect(() => {
-    if (!isAdmin) navigate({ to: "/" });
-  }, [isAdmin, navigate]);
+    if (!isLoading && !isAdmin) {
+      navigate({ to: "/" });
+    }
+  }, [isAdmin, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   const submit = (e: FormEvent) => {
     e.preventDefault();

@@ -14,7 +14,7 @@ type Filter = "all" | Priority;
 export function DashboardPage() {
   const { t } = useI18n();
   const { tasks, employees, currentEmployeeId } = useStore();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const [filter, setFilter] = useState<Filter>("all");
   const fmt = useFormatters();
   const [clock, setClock] = useState<string>("");
@@ -28,6 +28,14 @@ export function DashboardPage() {
     const id = setInterval(update, 30_000);
     return () => clearInterval(id);
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   const visibleTasks = useMemo(() => {
     const base = isAdmin

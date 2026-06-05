@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 export function SendPage() {
   const { t } = useI18n();
   const { employees, addTask } = useStore();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -21,8 +21,18 @@ export function SendPage() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!isAdmin) navigate({ to: "/" });
-  }, [isAdmin, navigate]);
+    if (!isLoading && !isAdmin) {
+      navigate({ to: "/" });
+    }
+  }, [isAdmin, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   const submit = (e: FormEvent) => {
     e.preventDefault();

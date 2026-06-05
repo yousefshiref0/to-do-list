@@ -146,32 +146,58 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
+    let mounted = true;
+
     async function fetchData() {
       try {
-        const { data: tasks, error: tErr } = await supabase.auth.getSession().then(() => 
-          supabase.from("tasks").select("*").order("created_at", { ascending: false })
-        );
-        const { data: employees, error: eErr } = await supabase.from("employees").select("*");
-        const { data: reports, error: rErr } = await supabase.from("reports").select("*").order("submitted_at", { ascending: false });
+        // Wait for session to be available or checked
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        const [tasksRes, employeesRes, reportsRes] = await Promise.all([
+          supabase.from("tasks").select("*").order("created_at", { ascending: false }),
+          supabase.from("employees").select("*"),
+          supabase.from("reports").select("*").order("submitted_at", { ascending: false })
+        ]);
 
-        if (tErr || eErr || rErr) {
-          console.warn("Error fetching from Supabase, using local state:", { tErr, eErr, rErr });
+        if (!mounted) return;
+
+        if (tasksRes.error || employeesRes.error || reportsRes.error) {
+          console.warn("Error fetching from Supabase:", { 
+            tErr: tasksRes.error, 
+            eErr: employeesRes.error, 
+            rErr: reportsRes.error 
+          });
           return;
         }
 
+        const tasks = tasksRes.data || [];
+        const employees = employeesRes.data || [];
+        const reports = reportsRes.data || [];
+
         setState((prev) => ({
           ...prev,
-          tasks: tasks || prev.tasks,
-          employees: employees || prev.employees,
-          reports: reports || prev.reports,
-          currentEmployeeId: (employees && employees.length > 0) ? employees[0].id : prev.currentEmployeeId,
+          tasks,
+          employees,
+          reports,
+          currentEmployeeId: employees.length > 0 ? employees[0].id : prev.currentEmployeeId,
         }));
       } catch (error) {
-        console.error("فشل الاتصال بسوبابيس:", error);
+        console.error("Connection failure:", error);
       }
     }
     fetchData();
+
+    // Set up realtime subscriptions
+    const tasksSub = supabase.channel('tasks-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => fetchData())
+      .subscribe();
+
+    return () => {
+      mounted = false;
+      tasksSub.unsubscribe();
+    };
   }, []);
+
   const addTask: Store["addTask"] = useCallback(async (t) => {
     try {
       const ref = genRef();
@@ -200,57 +226,78 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       }));
     } catch (error) {
       console.error("Error adding task:", error);
+      alert("Failed to add task. Please try again.");
     }
   }, []);
 
   const updateTaskStatus: Store["updateTaskStatus"] = useCallback(async (id, status) => {
-    await supabase.from("tasks").update({ status }).eq("id", id);
+    try {
+      const { error } = await supabase.from("tasks").update({ status }).eq("id", id);
+      if (error) throw error;
 
-    setState((s) => ({
-      ...s,
-      tasks: s.tasks.map((t) => (t.id === id ? { ...t, status } : t)),
-    }));
+      setState((s) => ({
+        ...s,
+        tasks: s.tasks.map((t) => (t.id === id ? { ...t, status } : t)),
+      }));
+    } catch (error) {
+      console.error("Error updating task:", error);
+      alert("Failed to update status.");
+    }
   }, []);
 
   const deleteTask: Store["deleteTask"] = useCallback(async (id) => {
-    await supabase.from("tasks").delete().eq("id", id);
+    try {
+      const { error } = await supabase.from("tasks").delete().eq("id", id);
+      if (error) throw error;
 
-    setState((s) => ({
-      ...s,
-      tasks: s.tasks.filter((t) => t.id !== id),
-    }));
+      setState((s) => ({
+        ...s,
+        tasks: s.tasks.filter((t) => t.id !== id),
+      }));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      alert("Failed to delete task.");
+    }
   }, []);
 
   const addEmployee: Store["addEmployee"] = useCallback(async (e) => {
-    const { data, error } = await supabase
-      .from("employees")
-      .insert([
-        {
-          ...e,
-          avatar_seed: Math.floor(Math.random() * 100),
-        },
-      ])
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("employees")
+        .insert([
+          {
+            ...e,
+            avatar_seed: Math.floor(Math.random() * 100),
+          },
+        ])
+        .select()
+        .single();
 
-    if (error) {
+      if (error) throw error;
+
+      setState((s) => ({
+        ...s,
+        employees: [...s.employees, data],
+      }));
+    } catch (error) {
       console.error("Error adding employee:", error);
-      return;
+      alert("Failed to add employee.");
     }
-
-    setState((s) => ({
-      ...s,
-      employees: [...s.employees, data],
-    }));
   }, []);
 
   const removeEmployee: Store["removeEmployee"] = useCallback(async (id) => {
-    await supabase.from("employees").delete().eq("id", id);
+    try {
+      const { error } = await supabase.from("employees").delete().eq("id", id);
+      if (error) throw error;
 
-    setState((s) => ({
-      ...s,
-      employees: s.employees.filter((e) => e.id !== id),
-    }));
+      setState((s) => ({
+        ...s,
+        employees: s.employees.filter((e) => e.id !== id),
+      }));
+    } catch (error) {
+      console.error("Error removing employee:", error);
+      alert("Failed to remove employee. They might have assigned tasks.");
+    }
   }, []);
 
   const addReport: Store["addReport"] = useCallback(async (r) => {
@@ -273,20 +320,26 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         reports: [data, ...s.reports],
       }));
 
-      alert("تم إرسال التقرير بنجاح!");
+      alert("Success!");
     } catch (error) {
       console.error("Error adding report:", error);
-      alert("فشل إرسال التقرير، راجعي الكونسول.");
+      alert("Failed to submit report.");
     }
   }, []);
 
   const deleteReport: Store["deleteReport"] = useCallback(async (id) => {
-    await supabase.from("reports").delete().eq("id", id);
+    try {
+      const { error } = await supabase.from("reports").delete().eq("id", id);
+      if (error) throw error;
 
-    setState((s) => ({
-      ...s,
-      reports: s.reports.filter((r) => r.id !== id),
-    }));
+      setState((s) => ({
+        ...s,
+        reports: s.reports.filter((r) => r.id !== id),
+      }));
+    } catch (error) {
+      console.error("Error deleting report:", error);
+      alert("Failed to delete report.");
+    }
   }, []);
 
   const setCurrentEmployeeId: Store["setCurrentEmployeeId"] = useCallback(

@@ -16,21 +16,32 @@ export function Header() {
   const navigate = useNavigate();
 
   const [loginOpen, setLoginOpen] = useState(false);
+  const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [err, setErr] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const me = employees.find((e) => e.id === currentEmployeeId) ?? employees[0];
 
-  const submitLogin = (e: FormEvent) => {
+  const submitLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (loginAdmin(pwd)) {
+    if (!email || !pwd) return;
+    
+    setIsLoggingIn(true);
+    setErr("");
+    
+    const { error } = await login(email, pwd);
+    
+    if (error) {
+      setErr(t.auth.wrong || "خطأ في تسجيل الدخول");
+      setIsLoggingIn(false);
+    } else {
       setLoginOpen(false);
       setPwd("");
-      setErr("");
+      setEmail("");
+      setIsLoggingIn(false);
       navigate({ to: "/" });
-    } else {
-      setErr(t.auth.wrong);
     }
   };
 
@@ -193,6 +204,21 @@ export function Header() {
             </div>
             <label className="block mt-6">
               <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-2 block">
+                {t.auth.email || "Email"}
+              </span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErr("");
+                }}
+                autoFocus
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              />
+            </label>
+            <label className="block mt-4">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-2 block">
                 {t.auth.password}
               </span>
               <input
@@ -202,7 +228,6 @@ export function Header() {
                   setPwd(e.target.value);
                   setErr("");
                 }}
-                autoFocus
                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               />
             </label>
@@ -217,6 +242,7 @@ export function Header() {
                 onClick={() => {
                   setLoginOpen(false);
                   setPwd("");
+                  setEmail("");
                   setErr("");
                 }}
                 className="flex-1 px-4 py-3 rounded-xl border border-border text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -225,9 +251,13 @@ export function Header() {
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-3 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest hover:opacity-90"
+                disabled={isLoggingIn}
+                className={cn(
+                  "flex-1 px-4 py-3 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest transition",
+                  isLoggingIn ? "opacity-50 cursor-not-allowed" : "hover:opacity-90",
+                )}
               >
-                {t.auth.enter}
+                {isLoggingIn ? t.common.loading || "..." : t.auth.enter}
               </button>
             </div>
           </form>

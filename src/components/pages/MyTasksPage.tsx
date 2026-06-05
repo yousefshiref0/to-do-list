@@ -9,8 +9,16 @@ import { useAuth } from "@/auth/AuthProvider";
 export function MyTasksPage() {
   const { t } = useI18n();
   const { tasks, employees, currentEmployeeId, updateTaskStatus } = useStore();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const fmt = useFormatters();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   const me = employees.find((e) => e.id === currentEmployeeId);
   const myTasks = isAdmin

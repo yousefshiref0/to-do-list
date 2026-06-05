@@ -4,12 +4,22 @@ import { AppShell } from "@/components/AppShell";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useStore, type InspectionReport } from "@/store/tasks";
 import { useFormatters } from "@/lib/format";
+import { useAuth } from "@/auth/AuthProvider";
 
 export function ReportsPage() {
   const { t } = useI18n();
   const { reports, employees, deleteReport } = useStore();
+  const { isLoading } = useAuth();
   const fmt = useFormatters();
   const [open, setOpen] = useState<InspectionReport | null>(null);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   const nameFor = (id: string) => employees.find((e) => e.id === id)?.name ?? id;
 

@@ -54,7 +54,7 @@ const empty: FormState = {
 export function ChecklistPage() {
   const { t } = useI18n();
   const { addReport, currentEmployeeId, employees } = useStore();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({ ...empty, submitted_by_id: currentEmployeeId });
   const [error, setError] = useState("");
@@ -67,10 +67,18 @@ export function ChecklistPage() {
   }, [currentEmployeeId]);
 
   useEffect(() => {
-    if (isAdmin) {
+    if (!isLoading && isAdmin) {
       navigate({ to: "/reports" });
     }
-  }, [isAdmin, navigate]);
+  }, [isAdmin, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="size-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((s) => ({ ...s, [k]: v }));
