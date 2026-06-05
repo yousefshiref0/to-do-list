@@ -132,7 +132,7 @@ function genRef(): string {
 }
 
 export function TaskProvider({ children }: { children: ReactNode }) {
-const API_URL = "https://to-do-list-of-modern-company-it9r.vercel.app";
+const API_URL = "https://backend-phi-gold-31.vercel.app";
 
 const [state, setState] = useState<Persisted>({
   tasks: [],
