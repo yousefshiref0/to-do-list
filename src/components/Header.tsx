@@ -116,6 +116,15 @@ export function Header() {
               <span>Admin</span>
             </Link>
           )}
+          {!isAdmin && (
+            <button
+              onClick={() => setLoginOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full bg-foreground text-background hover:opacity-90 transition px-3 sm:px-4 py-2 text-xs font-semibold"
+            >
+              <Lock className="size-3.5" />
+              <span className="hidden sm:inline">{t.header.adminLogin}</span>
+            </button>
+          )}
           {/* Admin login and employee selection hidden for bypassed auth flow */}
 
           <div className="hidden lg:flex items-center gap-3 ps-3 border-s border-border">
