@@ -12,7 +12,7 @@ export function Header() {
   const { t, lang, toggleLang } = useI18n();
   const { theme, toggle } = useTheme();
   const { employees, currentEmployeeId, setCurrentEmployeeId } = useStore();
-  const { isAdmin, logout, loginAdmin } = useAuth();
+  const { isAdmin, logout, login } = useAuth();
   const navigate = useNavigate();
 
   const [loginOpen, setLoginOpen] = useState(false);
