@@ -13,8 +13,8 @@ type Filter = "all" | Priority;
 
 export function DashboardPage() {
   const { t } = useI18n();
-  const { tasks, employees, currentEmployeeId } = useStore();
-  const { isAdmin, isLoading } = useAuth();
+  const { tasks = [], employees = [], currentEmployeeId } = useStore();
+  const { user, isAdmin, isLoading } = useAuth();
   const [filter, setFilter] = useState<Filter>("all");
   const fmt = useFormatters();
   const [clock, setClock] = useState<string>("");
@@ -29,6 +29,13 @@ export function DashboardPage() {
     return () => clearInterval(id);
   }, []);
 
+  const visibleTasks = useMemo(() => {
+    const base = isAdmin
+      ? tasks
+      : tasks.filter((x) => x.assignee_id === currentEmployeeId || x.assignee_id === "all");
+    return filter === "all" ? base : base.filter((tk) => tk.priority === filter);
+  }, [tasks, filter, isAdmin, currentEmployeeId]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-background">
@@ -37,19 +44,14 @@ export function DashboardPage() {
     );
   }
 
-  const visibleTasks = useMemo(() => {
-    const base = isAdmin
-      ? tasks
-      : tasks.filter((x) => x.assignee_id === currentEmployeeId || x.assignee_id === "all");
-    return filter === "all" ? base : base.filter((tk) => tk.priority === filter);
-  }, [tasks, filter, isAdmin, currentEmployeeId]);
+  if (!user) return null;
 
   const total = tasks.length;
   const pending = tasks.filter((x) => x.status !== "completed").length;
   const completed = tasks.filter((x) => x.status === "completed").length;
 
-  const teamProgress = employees.map((e) => {
-    const mine = tasks.filter((t) => t.assignee_id === e.id || t.assignee_id === "all");
+  const teamProgress = (employees || []).map((e) => {
+    const mine = (tasks || []).filter((t) => t.assignee_id === e.id || t.assignee_id === "all");
 
     const done = mine.filter((t) => t.status === "completed").length;
     const pct = mine.length === 0 ? 0 : Math.round((done / mine.length) * 100);
