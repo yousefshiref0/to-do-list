@@ -23,10 +23,10 @@ export function MyTasksPage() {
     );
   }
 
-  const me = employees.find((e) => e.id === currentEmployeeId);
+  const me = (employees || []).find((e) => e.id === currentEmployeeId);
   const myTasks = isAdmin
-    ? tasks
-    : tasks.filter((x) => x.assignee_id === currentEmployeeId || x.assignee_id === "all");
+    ? (tasks || [])
+    : (tasks || []).filter((x) => x?.assignee_id === currentEmployeeId || x?.assignee_id === "all");
 
   return (
     <AppShell>
@@ -69,7 +69,7 @@ export function MyTasksPage() {
                     </h3>
                     <p className="text-sm text-muted-foreground mt-2">{task.description}</p>
                     <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-3">
-                      {t.common.issued} · {fmt.ago(new Date(task.created_at).getTime())}
+                      {t.common.issued} · {fmt.ago(new Date(task?.created_at || Date.now()).getTime())}
                       {task.due_date ? ` · ${t.common.due} ${fmt.date(task.due_date)}` : ""}
                     </div>
                   </div>

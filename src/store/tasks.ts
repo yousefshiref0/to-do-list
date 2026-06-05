@@ -150,29 +150,31 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
     async function fetchData() {
       try {
-        // Wait for session to be available or checked
-        const { data: { session } } = await supabase.auth.getSession();
-        
+        const {
+          data: { user: currentUser },
+        } = await supabase.auth.getUser();
+
+        if (!mounted) return;
+
         const [tasksRes, employeesRes, reportsRes] = await Promise.all([
           supabase.from("tasks").select("*").order("created_at", { ascending: false }),
           supabase.from("employees").select("*"),
-          supabase.from("reports").select("*").order("submitted_at", { ascending: false })
+          supabase.from("reports").select("*").order("submitted_at", { ascending: false }),
         ]);
 
         if (!mounted) return;
 
         if (tasksRes.error || employeesRes.error || reportsRes.error) {
-          console.warn("Error fetching from Supabase:", { 
-            tErr: tasksRes.error, 
-            eErr: employeesRes.error, 
-            rErr: reportsRes.error 
+          console.warn("Supabase fetch mismatch/error:", {
+            tErr: tasksRes.error,
+            eErr: employeesRes.error,
+            rErr: reportsRes.error,
           });
-          return;
         }
 
-        const tasks = tasksRes.data || [];
-        const employees = employeesRes.data || [];
-        const reports = reportsRes.data || [];
+        const tasks = tasksRes.data ?? [];
+        const employees = employeesRes.data ?? [];
+        const reports = reportsRes.data ?? [];
 
         setState((prev) => ({
           ...prev,
@@ -188,8 +190,9 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     fetchData();
 
     // Set up realtime subscriptions
-    const tasksSub = supabase.channel('tasks-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => fetchData())
+    const tasksSub = supabase
+      .channel("tasks-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tasks" }, () => fetchData())
       .subscribe();
 
     return () => {

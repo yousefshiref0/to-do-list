@@ -55,8 +55,8 @@ export function Sidebar() {
     },
   ].filter((i) => !i.hidden && (isAdmin ? !i.employeeOnly : !i.adminOnly));
 
-  const pending = tasks.filter((x) => x.status !== "completed").length;
-  const completed = tasks.filter((x) => x.status === "completed").length;
+  const pending = (tasks || []).filter((x) => x?.status !== "completed").length;
+  const completed = (tasks || []).filter((x) => x?.status === "completed").length;
 
   return (
     <aside className="hidden lg:flex w-72 shrink-0 flex-col border-e border-border bg-sidebar">

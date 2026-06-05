@@ -111,7 +111,7 @@ export function ChecklistPage() {
     }, 1200);
   };
 
-  const me = employees.find((e) => e.id === currentEmployeeId);
+  const me = (employees || []).find((e) => e.id === currentEmployeeId);
 
   return (
     <AppShell>

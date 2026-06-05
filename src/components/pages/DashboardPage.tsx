@@ -156,8 +156,8 @@ export function DashboardPage() {
                 {visibleTasks.map((task) => {
                   const assignee =
                     task.assignee_id === "all"
-                      ? { name: t.send.assignAll, role: "" }
-                      : employees.find((e) => e.id === task.assignee_id);
+                      ? { name: t?.send?.assignAll, role: "" }
+                      : (employees || []).find((e) => e?.id === task?.assignee_id);
                   return (
                     <article
                       key={task.id}
@@ -185,7 +185,7 @@ export function DashboardPage() {
                       <div className="flex flex-col items-end gap-3 shrink-0">
                         <StatusBadge status={task.status} />
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                          {t.common.issued} · {fmt.ago(new Date(task.created_at).getTime())}
+                          {t.common.issued} · {fmt.ago(new Date(task?.created_at || Date.now()).getTime())}
                         </p>
                       </div>
                     </article>

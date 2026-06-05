@@ -22,7 +22,7 @@ export function ReportsPage() {
     );
   }
 
-  const nameFor = (id: string) => employees.find((e) => e.id === id)?.name ?? id;
+  const nameFor = (id: string) => (employees || []).find((e) => e?.id === id)?.name ?? id;
 
   return (
     <AppShell>
@@ -49,7 +49,7 @@ export function ReportsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {reports.map((r) => (
+              {(reports || []).map((r) => (
                 <article
                   key={r.id}
                   className="bg-surface border border-border rounded-3xl p-5 sm:p-6 shadow-soft flex flex-col"

@@ -22,7 +22,7 @@ export function Header() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const me = employees.find((e) => e.id === currentEmployeeId) ?? employees[0];
+  const me = (employees || []).find((e) => e?.id === currentEmployeeId) ?? (employees || [])[0];
 
   const submitLogin = async (e: FormEvent) => {
     e.preventDefault();
