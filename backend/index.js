@@ -5,12 +5,32 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const app = express();
 
+const ALLOWED_ORIGINS = [
+  "https://to-do-list-beta-sandy-89.vercel.app",
+  "https://to-do-list-of-modern-company-1wxc.vercel.app",
+  // allow any extra domain set via env var (e.g. staging)
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*", 
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (server-to-server, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.includes(origin) || origin.startsWith("http://localhost")) {
+      return callback(null, origin); // echo back the exact origin
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 }));
+
+// Handle OPTIONS preflight for all routes
+app.options("*", cors());
+
 app.use(express.json());
+
 
 // === 🌟 التعديل الأول: مسار ترحيبي للدومين الرئيسي ===
 app.get("/", (_, res) => {
