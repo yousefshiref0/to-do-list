@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Plus, ClipboardList } from "lucide-react";
+import { ArrowRight, Plus, ClipboardList, Lock } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useStore, type Priority } from "@/store/tasks";
@@ -45,7 +45,36 @@ export function DashboardPage() {
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
+          <div className="size-20 rounded-3xl bg-foreground text-background flex items-center justify-center mb-8 shadow-elevated">
+            <Lock className="size-10" />
+          </div>
+          <h1 className="font-display text-4xl sm:text-6xl font-bold text-foreground tracking-tight max-w-2xl">
+            {t.header.title || "Modern Enterprise"}
+          </h1>
+          <p className="mt-6 text-lg text-muted-foreground max-w-lg leading-relaxed">
+            {t.dashboard.shiftMessage || "Please log in to access your dashboard and instructions."}
+          </p>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => {
+                // The login modal is controlled by the Header component.
+                // We can't directly open it from here without lifting state or using a custom event/store.
+                // But the user can just click 'Login' in the header.
+                // We'll provide a helpful hint.
+              }}
+              className="px-8 py-4 rounded-full bg-foreground text-background font-bold text-sm uppercase tracking-widest hover:opacity-90 transition shadow-elevated"
+            >
+              Get Started
+            </button>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
 
   const total = tasks.length;
   const pending = tasks.filter((x) => x.status !== "completed").length;

@@ -43,7 +43,7 @@ export function ReportsPage() {
         </div>
 
         <div className="print:hidden">
-          {reports.length === 0 ? (
+          {(reports || []).length === 0 ? (
             <div className="bg-surface border border-border rounded-3xl p-16 text-center shadow-soft">
               <p className="text-muted-foreground">{t.checklist.noReports}</p>
             </div>
